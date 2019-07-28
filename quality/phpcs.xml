@@ -30,7 +30,9 @@
     -->
     <rule ref="Zend.NamingConventions.ValidVariableName"/>
 
-    <rule ref="Zend.NamingConventions.ValidVariableName.PrivateNoUnderscore"/>
+    <rule ref="Zend.NamingConventions.ValidVariableName.PrivateNoUnderscore">
+        <severity>0</severity>
+    </rule>
 
     <!--
       Statements may not have an empty body.
@@ -225,7 +227,9 @@
       The Sniff enforces that the result of a function call should be
       assigned to a variable before being returned.
     -->
-    <rule ref="MySource.PHP.ReturnFunctionValue"/>
+    <rule ref="MySource.PHP.ReturnFunctionValue">
+        <severity>0</severity>
+    </rule>
 
     <!--
       Classes must have their opening brace on a new line and
@@ -500,5 +504,7 @@
     <!--
       Ensures that there is no whitespace before a semicolon.
     -->
-    <rule ref="Squiz.WhiteSpace.SemicolonSpacing"/>
+    <rule ref="Squiz.WhiteSpace.SemicolonSpacing">
+        <severity>0</severity>
+    </rule>
 </ruleset>
