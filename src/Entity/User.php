@@ -15,22 +15,52 @@ declare(strict_types=1);
 
 namespace App\Entity;
 
+use ApiPlatform\Core\Annotation\ApiResource;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use Exception;
+use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Symfony\Component\Security\Core\User\UserInterface;
+use Symfony\Component\Serializer\Annotation\Groups;
+use Symfony\Component\Validator\Constraints as Assert;
 
 /**
  * User entity.
+ *
+ * @ApiResource(
+ *     normalizationContext={"groups": {"user:read"}},
+ *     denormalizationContext={"groups": {"user:write"}},
+ * )
  *
  * @ORM\Entity(repositoryClass="App\Repository\UserRepository")
  * @ORM\Table(name="ts_user", uniqueConstraints={
  *     @ORM\UniqueConstraint(name="uk_user_mail", columns={"email"}),
  *     @ORM\UniqueConstraint(name="uk_user_username", columns={"username"})
  * })
+ *
+ * @UniqueEntity(fields={"username"})
+ * @UniqueEntity(fields={"email"})
  */
-class User implements UserInterface
+class User implements UserInterface, ObfuscatedInterface
 {
+    //To implement obfuscated interface.
+    use ObfuscatedTrait {
+        ObfuscatedTrait::__construct as private __otConstruct;
+    }
+
+    /**
+     * @Groups({"user:read"})
+     * @ORM\OneToMany(targetEntity="App\Entity\Book", mappedBy="owner", orphanRemoval=true)
+     */
+    private $books;
+
     /**
      * @ORM\Column(type="string", length=180, unique=true)
+     * @Groups({"user:read", "user:write"})
+     *
+     * @Assert\NotBlank
+     * @Assert\Email
      */
     private $email;
 
@@ -44,6 +74,7 @@ class User implements UserInterface
     /**
      * @var string The hashed password
      * @ORM\Column(type="string")
+     * @Groups({"user:write"})
      */
     private $password;
 
@@ -54,8 +85,39 @@ class User implements UserInterface
 
     /**
      * @ORM\Column(type="string", length=255, unique=true)
+     * @Groups({"user:read", "user:write", "book:item:get"})
+     *
+     * @Assert\NotBlank
      */
     private $username;
+
+    /**
+     * User constructor.
+     *
+     * @throws Exception
+     */
+    public function __construct()
+    {
+        $this->__otConstruct();
+        $this->books = new ArrayCollection();
+    }
+
+    /**
+     * Book fluent adder.
+     *
+     * @param Book $book Book to add
+     *
+     * @return User
+     */
+    public function addBook(Book $book): self
+    {
+        if (!$this->books->contains($book)) {
+            $this->books[] = $book;
+            $book->setOwner($this);
+        }
+
+        return $this;
+    }
 
     /**
      * Erase sensitive data.
@@ -66,6 +128,16 @@ class User implements UserInterface
     {
         // If you store any temporary, sensitive data on the user, clear it here
         // $this->plainPassword = null;
+    }
+
+    /**
+     * Book getter.
+     *
+     * @return Collection|Book[]
+     */
+    public function getBooks(): Collection
+    {
+        return $this->books;
     }
 
     /**
@@ -136,6 +208,27 @@ class User implements UserInterface
     public function getUsername(): string
     {
         return (string) $this->email;
+    }
+
+    /**
+     * Book fluent remover.
+     * Be careful, book will be deleted.
+     *
+     * @param Book $book book to delete
+     *
+     * @return User
+     */
+    public function removeBook(Book $book): self
+    {
+        if ($this->books->contains($book)) {
+            $this->books->removeElement($book);
+            // set the owning side to null (unless already changed)
+            if ($book->getOwner() === $this) {
+                $book->setOwner(null);
+            }
+        }
+
+        return $this;
     }
 
     /**

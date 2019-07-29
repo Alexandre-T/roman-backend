@@ -17,28 +17,39 @@ namespace App\Entity;
 
 use ApiPlatform\Core\Annotation\ApiResource;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Serializer\Annotation\Groups;
 
 /**
+ * Book entity.
+ *
  * @ApiResource(
  *     collectionOperations={"get", "post"},
- *     itemOperations={"get", "put", "delete"}
+ *     denormalizationContext={"groups": {"book:write"}},
+ *     itemOperations={"get", "put", "delete"},
+ *     normalizationContext={"groups": {"book:read", "book:item:get"}}
  * )
  * @ORM\Entity(repositoryClass="App\Repository\BookRepository")
  * @ORM\Table(name="te_book")
  */
-class Book
+class Book implements ObfuscatedInterface
 {
+    //To implement obfuscated interface.
+    use ObfuscatedTrait;
+
     /**
+     * @Groups({"book:read", "book:write", "user:read"})
      * @ORM\Column(type="string", length=255, nullable=true)
      */
     private $author;
 
     /**
+     * @Groups({"book:read", "book:write"})
      * @ORM\Column(type="text", nullable=true)
      */
     private $biography;
 
     /**
+     * @Groups({"book:read", "book:write", "user:read"})
      * @ORM\Column(type="text", nullable=true)
      */
     private $dramaPitch;
@@ -51,16 +62,26 @@ class Book
     private $id;
 
     /**
+     * @Groups({"book:read", "book:write"})
+     * @ORM\ManyToOne(targetEntity="App\Entity\User", inversedBy="books")
+     * @ORM\JoinColumn(nullable=false)
+     */
+    private $owner;
+
+    /**
+     * @Groups({"book:read", "book:write"})
      * @ORM\Column(type="text", nullable=true)
      */
     private $taglinePitch;
 
     /**
+     * @Groups({"book:read", "book:write", "user:read"})
      * @ORM\Column(type="string", length=255)
      */
     private $title;
 
     /**
+     * @Groups({"book:read", "book:write"})
      * @ORM\Column(type="text", nullable=true)
      */
     private $trajectorialPitch;
@@ -103,6 +124,16 @@ class Book
     public function getId(): ?int
     {
         return $this->id;
+    }
+
+    /**
+     * Owner getter.
+     *
+     * @return User|null
+     */
+    public function getOwner(): ?User
+    {
+        return $this->owner;
     }
 
     /**
@@ -173,6 +204,20 @@ class Book
     public function setDramaPitch(?string $dramaPitch): self
     {
         $this->dramaPitch = $dramaPitch;
+
+        return $this;
+    }
+
+    /**
+     * Owner fluent setter.
+     *
+     * @param User|null $owner owner of book
+     *
+     * @return Book
+     */
+    public function setOwner(?User $owner): self
+    {
+        $this->owner = $owner;
 
         return $this;
     }
