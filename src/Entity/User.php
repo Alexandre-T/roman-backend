@@ -19,7 +19,6 @@ use ApiPlatform\Core\Annotation\ApiResource;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
-use Exception;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Component\Serializer\Annotation\Groups;
@@ -36,7 +35,8 @@ use Symfony\Component\Validator\Constraints as Assert;
  * @ORM\Entity(repositoryClass="App\Repository\UserRepository")
  * @ORM\Table(name="ts_user", uniqueConstraints={
  *     @ORM\UniqueConstraint(name="uk_user_mail", columns={"email"}),
- *     @ORM\UniqueConstraint(name="uk_user_username", columns={"username"})
+ *     @ORM\UniqueConstraint(name="uk_user_username", columns={"username"}),
+ *     @ORM\UniqueConstraint(name="uk_user_uuid", columns={"uuid"})
  * })
  *
  * @UniqueEntity(fields={"username"})
@@ -45,9 +45,7 @@ use Symfony\Component\Validator\Constraints as Assert;
 class User implements UserInterface, ObfuscatedInterface
 {
     //To implement obfuscated interface.
-    use ObfuscatedTrait {
-        ObfuscatedTrait::__construct as private __otConstruct;
-    }
+    use ObfuscatedTrait;
 
     /**
      * @Groups({"user:read"})
@@ -93,12 +91,10 @@ class User implements UserInterface, ObfuscatedInterface
 
     /**
      * User constructor.
-     *
-     * @throws Exception
      */
     public function __construct()
     {
-        $this->__otConstruct();
+        $this->initUuid();
         $this->books = new ArrayCollection();
     }
 

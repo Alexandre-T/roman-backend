@@ -19,15 +19,13 @@ use App\Entity\Book;
 use App\Entity\User;
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Common\Persistence\ObjectManager;
-use Exception;
 
 class AppFixtures extends Fixture
 {
     /**
      * Load data.
      *
-     * @param ObjectManager $manager
-     * @throws Exception
+     * @param ObjectManager $manager the manager to store data in database
      */
     public function load(ObjectManager $manager): void
     {

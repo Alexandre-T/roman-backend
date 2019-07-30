@@ -16,10 +16,12 @@ declare(strict_types=1);
 namespace App\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
-use Exception;
 use Ramsey\Uuid\Uuid;
 use Symfony\Component\Serializer\Annotation\Groups;
 
+/**
+ * Trait ObfuscatedTrait.
+ */
 trait ObfuscatedTrait
 {
     /**
@@ -32,38 +34,21 @@ trait ObfuscatedTrait
     private $uuid;
 
     /**
-     * ObfuscatedTrait constructor.
-     *
-     * @throws Exception
-     */
-    public function __construct()
-    {
-        $this->initUuid();
-    }
-
-    /**
      * Uuid getter.
-     * If uuid is empty, generate a new one.
-     *
-     * @throws Exception
      *
      * @return string
      */
     public function getUuid(): string
     {
-        if (null === $this->uuid) {
-            self::initUuid();
-        }
-
         return $this->uuid;
     }
 
     /**
      * Initialize UUID.
      *
-     * @throws Exception
+     * @see https://stackoverflow.com/questions/10867405/generating-v5-uuid-what-is-name-and-namespace
      */
-    public function initUuid(): void
+    private function initUuid(): void
     {
         if (null === $this->uuid) {
             $this->uuid = Uuid::uuid4()->toString();

@@ -29,7 +29,15 @@ use Symfony\Component\Serializer\Annotation\Groups;
  *     normalizationContext={"groups": {"book:read", "book:item:get"}}
  * )
  * @ORM\Entity(repositoryClass="App\Repository\BookRepository")
- * @ORM\Table(name="te_book")
+ * @ORM\Table(
+ *     name="te_book",
+ *     indexes={
+ *         @ORM\Index(name="idx_book_owner", columns={"owner_id"})
+ *     },
+ *     uniqueConstraints={
+ *         @ORM\UniqueConstraint(name="uk_book_uuid", columns={"uuid"})
+ *     }
+ * )
  */
 class Book implements ObfuscatedInterface
 {
@@ -85,6 +93,14 @@ class Book implements ObfuscatedInterface
      * @ORM\Column(type="text", nullable=true)
      */
     private $trajectorialPitch;
+
+    /**
+     * User constructor.
+     */
+    public function __construct()
+    {
+        $this->initUuid();
+    }
 
     /**
      * Author getter.
