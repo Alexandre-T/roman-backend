@@ -19,6 +19,8 @@ use App\Entity\User;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\ORM\NonUniqueResultException;
 use Symfony\Bridge\Doctrine\RegistryInterface;
+use Symfony\Bridge\Doctrine\Security\User\UserLoaderInterface;
+use Symfony\Component\Security\Core\User\UserInterface;
 
 /**
  * @method User|null find($id, $lockMode = null, $lockVersion = null)
@@ -26,7 +28,7 @@ use Symfony\Bridge\Doctrine\RegistryInterface;
  * @method User[]    findAll()
  * @method User[]    findBy(array $criteria, array $orderBy = null, $limit = null, $offset = null)
  */
-class UserRepository extends ServiceEntityRepository
+class UserRepository extends ServiceEntityRepository implements UserLoaderInterface
 {
     /**
      * UserRepository constructor.
@@ -80,5 +82,17 @@ class UserRepository extends ServiceEntityRepository
             //should not be reached because of unique index on username column
             return null;
         }
+    }
+
+    /**
+     * Load user by its mail.
+     *
+     * @param string $email user can only be loaded with its email.
+     *
+     * @return User|UserInterface|null
+     */
+    public function loadUserByUsername($email)
+    {
+        return $this->findOneByEmail($email);
     }
 }

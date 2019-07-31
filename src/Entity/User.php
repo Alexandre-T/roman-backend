@@ -77,6 +77,11 @@ class User implements UserInterface, ObfuscatedInterface
     private $password;
 
     /**
+     * @var string the plain password
+     */
+    private $plainPassword;
+
+    /**
      * @ORM\Column(type="json")
      */
     private $roles = [];
@@ -122,8 +127,7 @@ class User implements UserInterface, ObfuscatedInterface
      */
     public function eraseCredentials(): void
     {
-        // If you store any temporary, sensitive data on the user, clear it here
-        // $this->plainPassword = null;
+        $this->plainPassword = null;
     }
 
     /**
@@ -166,6 +170,16 @@ class User implements UserInterface, ObfuscatedInterface
     public function getPassword(): string
     {
         return (string) $this->password;
+    }
+
+    /**
+     * Plain password getter.
+     *
+     * @return string|null
+     */
+    public function getPlainPassword(): ?string
+    {
+        return $this->plainPassword;
     }
 
     /**
@@ -251,6 +265,24 @@ class User implements UserInterface, ObfuscatedInterface
     public function setPassword(string $password): self
     {
         $this->password = $password;
+
+        return $this;
+    }
+
+    /**
+     * Set the non-persistent plain password.
+     *
+     * @param string $plainPassword non-encrypted password
+     *
+     * @return User
+     */
+    public function setPlainPassword(string $plainPassword): User
+    {
+        $this->plainPassword = $plainPassword;
+        // forces the object to look "dirty" to Doctrine. Avoids
+        // Doctrine *not* saving this entity, if only plainPassword changes
+        // @see https://knpuniversity.com/screencast/symfony-security/user-plain-password
+        $this->password = null;
 
         return $this;
     }

@@ -32,7 +32,7 @@ class AppFixtures extends Fixture
         $user = new User();
         $user->setUsername('Admin');
         $user->setEmail('admin@example.org');
-        $user->setPassword('admin');
+        $user->setPlainPassword('admin');
         $manager->persist($user);
         $book = new Book();
         $book->setTitle('Title');
