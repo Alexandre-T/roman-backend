@@ -87,7 +87,7 @@ class UserRepository extends ServiceEntityRepository implements UserLoaderInterf
     /**
      * Load user by its mail.
      *
-     * @param string $email user can only be loaded with its email.
+     * @param string $email user can only be loaded with its email
      *
      * @return User|UserInterface|null
      */
