@@ -28,7 +28,7 @@ trait ObfuscatedTrait
      * UUID.
      *
      * @var string
-     * @ORM\Column(type="uuid", nullable=false, unique=true)
+     * @ORM\Column(type="string", length=36, nullable=false, unique=true)
      * @Groups({"book:read", "user:read"})
      */
     private $uuid;

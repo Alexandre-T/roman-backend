@@ -23,6 +23,7 @@ use Symfony\Component\Serializer\Annotation\Groups;
  * Book entity.
  *
  * @ApiResource(
+ *     attributes={"access_control"="is_granted('ROLE_ADMIN') or is_granted('ROLE_USER') and object.owner == user"},
  *     collectionOperations={"get", "post"},
  *     denormalizationContext={"groups": {"book:write"}},
  *     itemOperations={"get", "put", "delete"},
