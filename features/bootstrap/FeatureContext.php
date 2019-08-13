@@ -53,18 +53,8 @@ class FeatureContext implements Context, SnippetAcceptingContext
      */
     public function loginAsAdmin(BeforeScenarioScope $scope)
     {
-//        $user = new User();
-//        $user->setEmail('admin@example.org');
-//        $user->setUsername('Admin');
-//        $user->setRoles(['ROLE_ADMIN']);
-        /** @var UserRepository $userRepository */
-        $userRepository = $this->manager->getRepository(User::class);
-        /** @var User $user */
-        $user = $userRepository->findOneByEmail('admin@example.org');
-        $token = $this->jwtManager->create($user);
         /** @var RestContext $restContext */
         $this->restContext = $scope->getEnvironment()->getContext(RestContext::class);
-        $this->restContext->iAddHeaderEqualTo('Authorization', "Bearer $token");
     }
 
     /**
@@ -72,5 +62,18 @@ class FeatureContext implements Context, SnippetAcceptingContext
      */
     public function logout() {
         $this->restContext->iAddHeaderEqualTo('Authorization', '');
+    }
+
+    /**
+     * @Given /^I am login as admin$/
+     */
+    public function iAmLoginAsAdmin()
+    {
+        /** @var UserRepository $userRepository */
+        $userRepository = $this->manager->getRepository(User::class);
+        /** @var User $user */
+        $user = $userRepository->findOneByEmail('admin@example.org');
+        $token = $this->jwtManager->create($user);
+        $this->restContext->iAddHeaderEqualTo('Authorization', "Bearer $token");
     }
 }
