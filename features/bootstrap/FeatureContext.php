@@ -1,8 +1,13 @@
 <?php
 
+use App\Entity\User;
+use App\Repository\UserRepository;
 use Behat\Behat\Context\Context;
-use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\HttpFoundation\Response;
+use Behat\Behat\Context\SnippetAcceptingContext;
+use Behat\Behat\Hook\Scope\BeforeScenarioScope;
+use Behatch\Context\RestContext;
+use Doctrine\ORM\EntityManagerInterface as EntityManagerInterface;
+use Lexik\Bundle\JWTAuthenticationBundle\Services\JWTTokenManagerInterface as JWTTokenManagerInterface;
 use Symfony\Component\HttpKernel\KernelInterface;
 
 /**
@@ -11,38 +16,61 @@ use Symfony\Component\HttpKernel\KernelInterface;
  *
  * @see http://behat.org/en/latest/quick_start.html
  */
-class FeatureContext implements Context
+class FeatureContext implements Context, SnippetAcceptingContext
 {
     /**
-     * @var KernelInterface
+     * @var RestContext
      */
-    private $kernel;
+    private $restContext;
 
     /**
-     * @var Response|null
+     * @var JWTTokenManagerInterface
      */
-    private $response;
+    private $jwtManager;
 
+    /**
+     * @var EntityManagerInterface
+     */
+    private $manager;
+
+    /**
+     * FeatureContext constructor.
+     *
+     * @param KernelInterface $kernel the kernel to get services.
+     */
     public function __construct(KernelInterface $kernel)
     {
-        $this->kernel = $kernel;
+        $this->manager = $kernel->getContainer()->get('doctrine.orm.default_entity_manager');
+        $this->jwtManager = $kernel->getContainer()->get('lexik_jwt_authentication.jwt_manager');
     }
 
     /**
-     * @When a demo scenario sends a request to :path
+     * @BeforeScenario @loginAsAdmin
+     *
+     * @see https://symfony.com/doc/current/security/entity_provider.html#creating-your-first-user
+     *
+     * @param BeforeScenarioScope $scope the scope
      */
-    public function aDemoScenarioSendsARequestTo(string $path)
+    public function loginAsAdmin(BeforeScenarioScope $scope)
     {
-        $this->response = $this->kernel->handle(Request::create($path, 'GET'));
+//        $user = new User();
+//        $user->setEmail('admin@example.org');
+//        $user->setUsername('Admin');
+//        $user->setRoles(['ROLE_ADMIN']);
+        /** @var UserRepository $userRepository */
+        $userRepository = $this->manager->getRepository(User::class);
+        /** @var User $user */
+        $user = $userRepository->findOneByEmail('admin@example.org');
+        $token = $this->jwtManager->create($user);
+        /** @var RestContext $restContext */
+        $this->restContext = $scope->getEnvironment()->getContext(RestContext::class);
+        $this->restContext->iAddHeaderEqualTo('Authorization', "Bearer $token");
     }
 
     /**
-     * @Then the response should be received
+     * @AfterScenario @logout
      */
-    public function theResponseShouldBeReceived()
-    {
-        if ($this->response === null) {
-            throw new \RuntimeException('No response received');
-        }
+    public function logout() {
+        $this->restContext->iAddHeaderEqualTo('Authorization', '');
     }
 }

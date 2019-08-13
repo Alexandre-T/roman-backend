@@ -33,6 +33,7 @@ class AppFixtures extends Fixture
         $user->setUsername('Admin');
         $user->setEmail('admin@example.org');
         $user->setPlainPassword('admin');
+        $user->setRoles(['ROLE_ADMIN']);
         $manager->persist($user);
         $book = new Book();
         $book->setTitle('Title');

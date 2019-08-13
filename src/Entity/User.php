@@ -27,10 +27,7 @@ use Symfony\Component\Validator\Constraints as Assert;
 /**
  * User entity.
  *
- * @ApiResource(
- *     normalizationContext={"groups": {"user:read"}},
- *     denormalizationContext={"groups": {"user:write"}},
- * )
+ * @ApiResource()
  *
  * @ORM\Entity(repositoryClass="App\Repository\UserRepository")
  * @ORM\Table(name="ts_user", uniqueConstraints={
@@ -48,14 +45,12 @@ class User implements UserInterface, ObfuscatedInterface
     use ObfuscatedTrait;
 
     /**
-     * @Groups({"user:read"})
      * @ORM\OneToMany(targetEntity="App\Entity\Book", mappedBy="owner", orphanRemoval=true)
      */
     private $books;
 
     /**
      * @ORM\Column(type="string", length=180, unique=true)
-     * @Groups({"user:read", "user:write"})
      *
      * @Assert\NotBlank
      * @Assert\Email
@@ -88,7 +83,6 @@ class User implements UserInterface, ObfuscatedInterface
 
     /**
      * @ORM\Column(type="string", length=255, unique=true)
-     * @Groups({"user:read", "user:write", "book:item:get"})
      *
      * @Assert\NotBlank
      */
