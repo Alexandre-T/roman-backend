@@ -1,23 +1,40 @@
 <?php
+/**
+ * This file is part of the back-end of Roman application.
+ *
+ * PHP version 7.1|7.2|7.3|7.4
+ *
+ * (c) Alexandre Tranchant <alexandre.tranchant@gmail.com>
+ *
+ * @author    Alexandre Tranchant <alexandre.tranchant@gmail.com>
+ * @copyright 2019 Alexandre Tranchant
+ * @license   Cecill-B http://www.cecill.info/licences/Licence_CeCILL-B_V1-fr.txt
+ */
+
+declare(strict_types=1);
 
 namespace App\Tests;
 
 use App\Entity\Book;
 use PHPUnit\Framework\TestCase;
 
+/**
+ * @internal
+ * @coversNothing
+ */
 class BookTest extends TestCase
 {
     /**
      * Book to unit test.
-     * 
-     * @var Book 
+     *
+     * @var Book
      */
     private $book;
 
     /**
      * Setup the book entity to test.
      */
-    public function setUp()
+    public function setUp(): void
     {
         $this->book = new Book();
     }
@@ -25,7 +42,7 @@ class BookTest extends TestCase
     /**
      * Test the constructor.
      */
-    public function testConstruct()
+    public function testConstruct(): void
     {
         self::assertNull($this->book->getAuthor());
         self::assertNull($this->book->getBiography());
@@ -40,9 +57,17 @@ class BookTest extends TestCase
     }
 
     /**
+     * Test author getter and setter.
+     */
+    public function testGetAuthor(): void
+    {
+        self::markTestIncomplete();
+    }
+
+    /**
      * Test biography getter and setter.
      */
-    public function testGetBiography()
+    public function testGetBiography(): void
     {
         self::markTestIncomplete();
     }
@@ -50,7 +75,7 @@ class BookTest extends TestCase
     /**
      * Test drama pitch getter and setter.
      */
-    public function testGetDramaPitch()
+    public function testGetDramaPitch(): void
     {
         self::markTestIncomplete();
     }
@@ -58,31 +83,7 @@ class BookTest extends TestCase
     /**
      * Test owner getter and setter.
      */
-    public function testGetOwner()
-    {
-        self::markTestIncomplete();
-    }
-
-    /**
-     * Test trajectorial pitch getter and setter.
-     */
-    public function testGetTrajectorialPitch()
-    {
-        self::markTestIncomplete();
-    }
-
-    /**
-     * Test author getter and setter.
-     */
-    public function testGetAuthor()
-    {
-        self::markTestIncomplete();
-    }
-
-    /**
-     * Test title getter and setter.
-     */
-    public function testGetTitle()
+    public function testGetOwner(): void
     {
         self::markTestIncomplete();
     }
@@ -90,7 +91,23 @@ class BookTest extends TestCase
     /**
      * Test tagline pitch getter and setter.
      */
-    public function testGetTaglinePitch()
+    public function testGetTaglinePitch(): void
+    {
+        self::markTestIncomplete();
+    }
+
+    /**
+     * Test title getter and setter.
+     */
+    public function testGetTitle(): void
+    {
+        self::markTestIncomplete();
+    }
+
+    /**
+     * Test trajectorial pitch getter and setter.
+     */
+    public function testGetTrajectorialPitch(): void
     {
         self::markTestIncomplete();
     }

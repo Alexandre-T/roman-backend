@@ -27,7 +27,7 @@ use Symfony\Component\Validator\Constraints as Assert;
 /**
  * User entity.
  *
- * @ApiResource()
+ * @ApiResource
  *
  * @ORM\Entity(repositoryClass="App\Repository\UserRepository")
  * @ORM\Table(name="ts_user", uniqueConstraints={

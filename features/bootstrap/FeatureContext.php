@@ -1,4 +1,17 @@
 <?php
+/**
+ * This file is part of the back-end of Roman application.
+ *
+ * PHP version 7.1|7.2|7.3|7.4
+ *
+ * (c) Alexandre Tranchant <alexandre.tranchant@gmail.com>
+ *
+ * @author    Alexandre Tranchant <alexandre.tranchant@gmail.com>
+ * @copyright 2019 Alexandre Tranchant
+ * @license   Cecill-B http://www.cecill.info/licences/Licence_CeCILL-B_V1-fr.txt
+ */
+
+declare(strict_types=1);
 
 use App\Entity\User;
 use App\Repository\UserRepository;
@@ -20,11 +33,6 @@ use Symfony\Component\HttpKernel\KernelInterface;
 class FeatureContext implements Context
 {
     /**
-     * @var RestContext
-     */
-    private $restContext;
-
-    /**
      * @var JWTTokenManagerInterface
      */
     private $jwtManager;
@@ -35,9 +43,14 @@ class FeatureContext implements Context
     private $manager;
 
     /**
+     * @var RestContext|null
+     */
+    private $restContext;
+
+    /**
      * FeatureContext constructor.
      *
-     * @param KernelInterface $kernel the kernel to get services.
+     * @param KernelInterface $kernel the kernel to get services
      */
     public function __construct(KernelInterface $kernel)
     {
@@ -46,24 +59,11 @@ class FeatureContext implements Context
     }
 
     /**
-     * @BeforeScenario @restContext
-     *
-     * @see https://symfony.com/doc/current/security/entity_provider.html#creating-your-first-user
-     *
-     * @param BeforeScenarioScope $scope the scope
-     */
-    public function restContext(BeforeScenarioScope $scope)
-    {
-        /** @var RestContext $restContext */
-        $this->restContext = $scope->getEnvironment()->getContext(RestContext::class);
-    }
-
-    /**
      * @Given /^I am login as admin$/
      *
      * @throws RuntimeException when rest context is not set
      */
-    public function iAmLoginAsAdmin()
+    public function iAmLoginAsAdmin(): void
     {
         if (empty($this->restContext)) {
             throw new RuntimeException(
@@ -76,6 +76,19 @@ class FeatureContext implements Context
         /** @var User $user */
         $user = $userRepository->findOneByEmail('admin@example.org');
         $token = $this->jwtManager->create($user);
-        $this->restContext->iAddHeaderEqualTo('Authorization', "Bearer $token");
+        $this->restContext->iAddHeaderEqualTo('Authorization', "Bearer {$token}");
+    }
+
+    /**
+     * @BeforeScenario @restContext
+     *
+     * @see https://symfony.com/doc/current/security/entity_provider.html#creating-your-first-user
+     *
+     * @param BeforeScenarioScope $scope the scope
+     */
+    public function restContext(BeforeScenarioScope $scope): void
+    {
+        /** @var RestContext $restContext */
+        $this->restContext = $scope->getEnvironment()->getContext(RestContext::class);
     }
 }

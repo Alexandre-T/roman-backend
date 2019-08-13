@@ -45,7 +45,8 @@
     },
     "autoload-dev": {
         "psr-4": {
-            "App\\Tests\\": "features/"
+            "App\\Tests\\": "tests/",
+            "App\\Behat\\Tests\\": "features/"
         }
     },
     "replace": {
@@ -61,8 +62,8 @@
             "cache:clear": "symfony-cmd",
             "assets:install %PUBLIC_DIR%": "symfony-cmd"
         },
-        "phpcs": "phpcs src --standard=quality/phpcs.xml -s",
-        "phpcsfixer": "php-cs-fixer fix src --config=quality/.php_cs.dist --allow-risky yes",
+        "phpcs": "phpcs . --standard=quality/phpcs.xml -s",
+        "phpcsfixer": "php-cs-fixer fix --config=quality/.php_cs.dist --allow-risky yes",
         "phpmd": "phpmd src/ xml quality/phpmd.xml",
         "post-install-cmd": [
             "@auto-scripts"
