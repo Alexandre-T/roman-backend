@@ -45,30 +45,31 @@ class FeatureContext implements Context, SnippetAcceptingContext
     }
 
     /**
-     * @BeforeScenario @loginAsAdmin
+     * @BeforeScenario @restContext
      *
      * @see https://symfony.com/doc/current/security/entity_provider.html#creating-your-first-user
      *
      * @param BeforeScenarioScope $scope the scope
      */
-    public function loginAsAdmin(BeforeScenarioScope $scope)
+    public function restContext(BeforeScenarioScope $scope)
     {
         /** @var RestContext $restContext */
         $this->restContext = $scope->getEnvironment()->getContext(RestContext::class);
     }
 
     /**
-     * @AfterScenario @logout
-     */
-    public function logout() {
-        $this->restContext->iAddHeaderEqualTo('Authorization', '');
-    }
-
-    /**
      * @Given /^I am login as admin$/
+     *
+     * @throws RuntimeException when rest context is not set
      */
     public function iAmLoginAsAdmin()
     {
+        if (empty($this->restContext)) {
+            throw new RuntimeException(
+                'Rest context is not set. Did you forget to add @restContext before your scenario?'
+            );
+        }
+
         /** @var UserRepository $userRepository */
         $userRepository = $this->manager->getRepository(User::class);
         /** @var User $user */
