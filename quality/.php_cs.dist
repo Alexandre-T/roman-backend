@@ -1,7 +1,11 @@
 <?php
 $finder = PhpCsFixer\Finder::create()
-    ->exclude(['vendor','bin','var'])
-    ->in(__DIR__);
+    ->exclude([
+        'bin',
+        'var',
+        'vendor',
+    ])
+    ->in(dirname(__DIR__, 1));
 $header = <<<EOF
 This file is part of the back-end of Roman application.
  

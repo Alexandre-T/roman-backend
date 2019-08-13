@@ -28,6 +28,7 @@ final class Version20190805191108 extends AbstractMigration
      * Drop tables.
      *
      * @param Schema $schema
+     *
      * @throws DBALException
      */
     public function down(Schema $schema): void
@@ -52,6 +53,7 @@ final class Version20190805191108 extends AbstractMigration
 
     /**
      * @param Schema $schema
+     *
      * @throws DBALException
      */
     public function up(Schema $schema): void

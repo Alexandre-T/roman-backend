@@ -29,15 +29,36 @@ class AppFixtures extends Fixture
      */
     public function load(ObjectManager $manager): void
     {
+        $admin = new User();
+        $admin->setUsername('Admin');
+        $admin->setEmail('admin@example.org');
+        $admin->setPlainPassword('admin');
+        $admin->setRoles(['ROLE_ADMIN']);
+        $manager->persist($admin);
+
+        $owner = new User();
+        $owner->setUsername('Owner');
+        $owner->setEmail('owner@example.org');
+        $owner->setPlainPassword('owner');
+        $owner->setRoles(['ROLE_USER']);
+        $manager->persist($owner);
+
         $user = new User();
-        $user->setUsername('Admin');
-        $user->setEmail('admin@example.org');
-        $user->setPlainPassword('admin');
-        $user->setRoles(['ROLE_ADMIN']);
+        $user->setUsername('User');
+        $user->setEmail('user@example.org');
+        $user->setPlainPassword('user');
+        $user->setRoles(['ROLE_USER']);
         $manager->persist($user);
+
         $book = new Book();
-        $book->setTitle('Title');
-        $book->setOwner($user);
+        $book->setTitle('Book of Owner');
+        $book->setOwner($owner);
+        $manager->persist($book);
+        $manager->flush();
+
+        $book = new Book();
+        $book->setTitle('Book of Admin');
+        $book->setOwner($admin);
         $manager->persist($book);
         $manager->flush();
     }

@@ -59,24 +59,29 @@ class FeatureContext implements Context
     }
 
     /**
-     * @Given /^I am login as admin$/
+     * @Given /^I am logged as admin$/
      *
      * @throws RuntimeException when rest context is not set
      */
-    public function iAmLoginAsAdmin(): void
+    public function iAmLoggedAsAdmin(): void
     {
-        if (empty($this->restContext)) {
-            throw new RuntimeException(
-                'Rest context is not set. Did you forget to add @restContext before your scenario?'
-            );
-        }
+        $this->iAmLoggedAs('admin');
+    }
 
-        /** @var UserRepository $userRepository */
-        $userRepository = $this->manager->getRepository(User::class);
-        /** @var User $user */
-        $user = $userRepository->findOneByEmail('admin@example.org');
-        $token = $this->jwtManager->create($user);
-        $this->restContext->iAddHeaderEqualTo('Authorization', "Bearer {$token}");
+    /**
+     * @Given /^I am logged as owner$/
+     */
+    public function iAmLoggedAsOwner(): void
+    {
+        $this->iAmLoggedAs('owner');
+    }
+
+    /**
+     * @Given /^I am logged as user$/
+     */
+    public function iAmLoggedAsUser(): void
+    {
+        $this->iAmLoggedAs('user');
     }
 
     /**
@@ -88,7 +93,28 @@ class FeatureContext implements Context
      */
     public function restContext(BeforeScenarioScope $scope): void
     {
-        /** @var RestContext $restContext */
+        /* @var RestContext $restContext the rest context */
         $this->restContext = $scope->getEnvironment()->getContext(RestContext::class);
+    }
+
+    /**
+     * @param string $username the username
+     *
+     * @throws RuntimeException when rest contest is not set
+     */
+    private function iAmLoggedAs(string $username): void
+    {
+        if (empty($this->restContext)) {
+            throw new RuntimeException(
+                'Rest context is not set. Did you forget to add @restContext before your scenario?'
+            );
+        }
+
+        /** @var UserRepository $userRepository */
+        $userRepository = $this->manager->getRepository(User::class);
+        /** @var User $user */
+        $user = $userRepository->findOneByEmail($username.'@example.org');
+        $token = $this->jwtManager->create($user);
+        $this->restContext->iAddHeaderEqualTo('Authorization', "Bearer {$token}");
     }
 }

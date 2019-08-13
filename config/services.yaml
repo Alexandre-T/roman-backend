@@ -23,12 +23,23 @@ services:
         resource: '../src/Controller'
         tags: ['controller.service_arguments']
 
+    # voters are imported separately to make sure they are tagged
+    App\Security\:
+        resource: '../src/Security'
+        tags: ['security.voter']
+
     # Listener to hash the user password when necessary.
     App\Listener\HashPasswordListener:
         class: App\Listener\HashPasswordListener
         autowire: true
         tags:
             - { name: doctrine.event_subscriber }
+
+    # Owner extension for Api-Platform guaranties that a user cannot read a book if it is not his own book.
+    App\Doctrine\OwnerExtension:
+        tags:
+            - { name: api_platform.doctrine.orm.query_extension.collection }
+            - { name: api_platform.doctrine.orm.query_extension.item }
 
     # add more service definitions when explicit configuration is needed
     # please note that last definitions always *replace* previous ones

@@ -25,12 +25,12 @@ use Symfony\Component\Serializer\Annotation\Groups;
  * @ApiResource(
  *     collectionOperations={
  *         "get": {"access_control": "is_granted('ROLE_ADMIN')"},
- *         "post": {"access_control": "is_granted('ROLE_ADMIN') or is_granted('ROLE_USER') and object.owner == user"}
+ *         "post": {"access_control": "is_granted('create', object)"}
  *     },
  *     itemOperations={
- *         "get": {"access_control": "is_granted('ROLE_ADMIN') or is_granted('ROLE_USER') and object.owner == user"},
- *         "put": {"access_control": "is_granted('ROLE_ADMIN') or is_granted('ROLE_USER') and previous_object.owner == user"},
- *         "delete": {"access_control": "is_granted('ROLE_ADMIN') or is_granted('ROLE_USER') and object.owner == user"}
+ *         "get": {"access_control": "is_granted('show', object)"},
+ *         "put": {"access_control": "is_granted('edit', object)"},
+ *         "delete": {"access_control": "is_granted('delete', object)"},
  *     },
  *     denormalizationContext={"groups": {"book:write"}},
  *     normalizationContext={"groups": {"book:read", "book:item:get"}}
