@@ -3,7 +3,6 @@
 use App\Entity\User;
 use App\Repository\UserRepository;
 use Behat\Behat\Context\Context;
-use Behat\Behat\Context\SnippetAcceptingContext;
 use Behat\Behat\Hook\Scope\BeforeScenarioScope;
 use Behatch\Context\RestContext;
 use Doctrine\ORM\EntityManagerInterface as EntityManagerInterface;
@@ -12,11 +11,13 @@ use Symfony\Component\HttpKernel\KernelInterface;
 
 /**
  * This context class contains the definitions of the steps used by the demo
- * feature file. Learn how to get started with Behat and BDD on Behat's website.
+ * feature file.
+ *
+ * Do not forget to launch via bin/behat --snippets-for=FeatureContext
  *
  * @see http://behat.org/en/latest/quick_start.html
  */
-class FeatureContext implements Context, SnippetAcceptingContext
+class FeatureContext implements Context
 {
     /**
      * @var RestContext

@@ -29,6 +29,7 @@
         "squizlabs/php_codesniffer": "^3.4",
         "symfony/debug-pack": "^1.0",
         "symfony/maker-bundle": "^1.12",
+        "symfony/phpunit-bridge": "^4.3",
         "symfony/profiler-pack": "^1.0"
     },
     "config": {
@@ -44,7 +45,7 @@
     },
     "autoload-dev": {
         "psr-4": {
-            "App\\Tests\\": "tests/"
+            "App\\Tests\\": "features/"
         }
     },
     "replace": {
