@@ -30,7 +30,8 @@ use Symfony\Component\Validator\Constraints as Assert;
  *
  * @ApiResource(
  *     denormalizationContext={"groups": {"user:write"}},
- *     normalizationContext={"groups": {"user:read"}}
+ *     normalizationContext={"groups": {"user:read"}},
+ *     iri="https://schema.org/Person"
  * )
  *
  * @ORM\Entity(repositoryClass="App\Repository\UserRepository")
@@ -60,6 +61,8 @@ class User implements UserInterface, ObfuscatedInterface
      *
      * @Assert\NotBlank
      * @Assert\Email
+     *
+     * @ApiProperty(iri="https://schema.org/email")
      */
     private $email;
 
@@ -95,6 +98,8 @@ class User implements UserInterface, ObfuscatedInterface
      * @Groups({"user:read", "user:write", "book:item:get"})
      *
      * @Assert\NotBlank
+     *
+     * @ApiProperty(iri="https://schema.org/name")
      */
     private $username;
 
