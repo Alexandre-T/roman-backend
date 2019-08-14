@@ -15,6 +15,7 @@ declare(strict_types=1);
 
 namespace App\Entity;
 
+use ApiPlatform\Core\Annotation\ApiProperty;
 use ApiPlatform\Core\Annotation\ApiResource;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Annotation\Groups;
@@ -24,7 +25,7 @@ use Symfony\Component\Serializer\Annotation\Groups;
  *
  * @ApiResource(
  *     collectionOperations={
- *         "get": {"access_control": "is_granted('ROLE_ADMIN')"},
+ *         "get",
  *         "post": {"access_control": "is_granted('create', object)"}
  *     },
  *     itemOperations={
@@ -33,7 +34,8 @@ use Symfony\Component\Serializer\Annotation\Groups;
  *         "delete": {"access_control": "is_granted('delete', object)"},
  *     },
  *     denormalizationContext={"groups": {"book:write"}},
- *     normalizationContext={"groups": {"book:read", "book:item:get"}}
+ *     normalizationContext={"groups": {"book:read", "book:item:get"}},
+ *     iri="https://schema.org/Book"
  * )
  * @ORM\Entity(repositoryClass="App\Repository\BookRepository")
  * @ORM\Table(
@@ -73,6 +75,7 @@ class Book implements ObfuscatedInterface
      * @ORM\Id
      * @ORM\GeneratedValue
      * @ORM\Column(type="integer")
+     * @ApiProperty(identifier=false)
      */
     private $id;
 
@@ -92,6 +95,8 @@ class Book implements ObfuscatedInterface
     /**
      * @Groups({"book:read", "book:write", "user:read"})
      * @ORM\Column(type="string", length=255)
+     *
+     * @ApiProperty(iri="http://schema.org/name")
      */
     private $title;
 

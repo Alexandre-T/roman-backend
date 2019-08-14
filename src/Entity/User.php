@@ -15,6 +15,7 @@ declare(strict_types=1);
 
 namespace App\Entity;
 
+use ApiPlatform\Core\Annotation\ApiProperty;
 use ApiPlatform\Core\Annotation\ApiResource;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
@@ -27,7 +28,10 @@ use Symfony\Component\Validator\Constraints as Assert;
 /**
  * User entity.
  *
- * @ApiResource
+ * @ApiResource(
+ *     denormalizationContext={"groups": {"user:write"}},
+ *     normalizationContext={"groups": {"user:read"}}
+ * )
  *
  * @ORM\Entity(repositoryClass="App\Repository\UserRepository")
  * @ORM\Table(name="ts_user", uniqueConstraints={
@@ -45,12 +49,14 @@ class User implements UserInterface, ObfuscatedInterface
     use ObfuscatedTrait;
 
     /**
+     * @Groups({"user:read"})
      * @ORM\OneToMany(targetEntity="App\Entity\Book", mappedBy="owner", orphanRemoval=true)
      */
     private $books;
 
     /**
      * @ORM\Column(type="string", length=180, unique=true)
+     * @Groups({"user:read", "user:write"})
      *
      * @Assert\NotBlank
      * @Assert\Email
@@ -61,6 +67,7 @@ class User implements UserInterface, ObfuscatedInterface
      * @ORM\Id
      * @ORM\GeneratedValue
      * @ORM\Column(type="integer")
+     * @ApiProperty(identifier=false)
      */
     private $id;
 
@@ -78,11 +85,14 @@ class User implements UserInterface, ObfuscatedInterface
 
     /**
      * @ORM\Column(type="json")
+     * @Groups({"user:read", "user:write"})
+     *
      */
     private $roles = [];
 
     /**
      * @ORM\Column(type="string", length=255, unique=true)
+     * @Groups({"user:read", "user:write", "book:item:get"})
      *
      * @Assert\NotBlank
      */

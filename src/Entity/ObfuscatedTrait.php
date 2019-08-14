@@ -15,6 +15,7 @@ declare(strict_types=1);
 
 namespace App\Entity;
 
+use ApiPlatform\Core\Annotation\ApiProperty;
 use Doctrine\ORM\Mapping as ORM;
 use Ramsey\Uuid\Uuid;
 use Symfony\Component\Serializer\Annotation\Groups;
@@ -30,6 +31,7 @@ trait ObfuscatedTrait
      * @var string
      * @ORM\Column(type="string", length=36, nullable=false, unique=true)
      * @Groups({"book:read", "user:read"})
+     * @ApiProperty(identifier=true)
      */
     private $uuid;
 
