@@ -13,13 +13,22 @@
 
 declare(strict_types=1);
 
+namespace App\Tests\Behat\Context;
+
+use App\DataFixtures\AppFixtures;
 use App\Entity\User;
 use App\Repository\UserRepository;
 use Behat\Behat\Context\Context;
 use Behat\Behat\Hook\Scope\BeforeScenarioScope;
 use Behatch\Context\RestContext;
+use Doctrine\Common\DataFixtures\Executor\ORMExecutor;
+use Doctrine\Common\DataFixtures\Purger\ORMPurger;
+use Doctrine\Common\DataFixtures\Loader;
 use Doctrine\ORM\EntityManagerInterface as EntityManagerInterface;
+use Doctrine\ORM\Tools\SchemaTool;
+use Doctrine\ORM\Tools\ToolsException;
 use Lexik\Bundle\JWTAuthenticationBundle\Services\JWTTokenManagerInterface as JWTTokenManagerInterface;
+use RuntimeException;
 use Symfony\Component\HttpKernel\KernelInterface;
 
 /**
@@ -51,11 +60,23 @@ class FeatureContext implements Context
      * FeatureContext constructor.
      *
      * @param KernelInterface $kernel the kernel to get services
+     *
+     * @throws RuntimeException when unable to create schema
      */
     public function __construct(KernelInterface $kernel)
     {
         $this->manager = $kernel->getContainer()->get('doctrine.orm.default_entity_manager');
         $this->jwtManager = $kernel->getContainer()->get('lexik_jwt_authentication.jwt_manager');
+
+        //We drop and load schema
+        $schemaTool = new SchemaTool($this->manager);
+        $schemaTool->dropDatabase();
+        $metadata = $this->manager->getMetadataFactory()->getAllMetadata();
+        try {
+            $schemaTool->createSchema($metadata);
+        } catch (ToolsException $e) {
+            throw new RuntimeException('Unable to create schema.', 500, $e);
+        }
     }
 
     /**
@@ -116,5 +137,21 @@ class FeatureContext implements Context
         $user = $userRepository->findOneByEmail($username.'@example.org');
         $token = $this->jwtManager->create($user);
         $this->restContext->iAddHeaderEqualTo('Authorization', "Bearer {$token}");
+    }
+
+    /**
+     * @Given /^database is clean$/
+     */
+    public function databaseIsClean()
+    {
+        $appFixtures = new AppFixtures();
+        $loader = new Loader();
+        $loader->addFixture($appFixtures);
+
+        $purger = new ORMPurger();
+        $purger->setPurgeMode(ORMPurger::PURGE_MODE_DELETE);
+
+        $executor = new ORMExecutor($this->manager, $purger);
+        $executor->execute($loader->getFixtures());
     }
 }
