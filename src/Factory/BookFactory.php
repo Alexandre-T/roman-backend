@@ -34,7 +34,7 @@ class BookFactory
     public static function createBook(User $owner, string $title = null): Book
     {
         $book = new Book();
-        $book->setAuthor($owner->getUsername());
+        $book->setAuthor($owner->getNickname());
         $book->setOwner($owner);
 
         if (null !== $title) {
