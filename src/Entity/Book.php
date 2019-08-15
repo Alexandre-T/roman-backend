@@ -57,6 +57,7 @@ class Book implements ObfuscatedInterface
     /**
      * @Groups({"book:read", "book:write", "user:read"})
      * @ORM\Column(type="string", length=255, nullable=true)
+     * @Assert\Length(max="255")
      */
     private $author;
 
@@ -102,6 +103,7 @@ class Book implements ObfuscatedInterface
      * @ApiProperty(iri="http://schema.org/name")
      *
      * @Assert\NotBlank()
+     * @Assert\Length(max="255")
      */
     private $title;
 
