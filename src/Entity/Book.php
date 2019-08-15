@@ -25,7 +25,7 @@ use Symfony\Component\Serializer\Annotation\Groups;
  *
  * @ApiResource(
  *     collectionOperations={
- *         "get",
+ *         "get": {"access_control": "is_granted('ROLE_USER')"},
  *         "post": {"access_control": "is_granted('create', object)"}
  *     },
  *     itemOperations={

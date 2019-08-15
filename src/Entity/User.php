@@ -37,11 +37,11 @@ use Symfony\Component\Validator\Constraints as Assert;
  * @ORM\Entity(repositoryClass="App\Repository\UserRepository")
  * @ORM\Table(name="ts_user", uniqueConstraints={
  *     @ORM\UniqueConstraint(name="uk_user_mail", columns={"email"}),
- *     @ORM\UniqueConstraint(name="uk_user_username", columns={"username"}),
+ *     @ORM\UniqueConstraint(name="uk_user_nickname", columns={"nickname"}),
  *     @ORM\UniqueConstraint(name="uk_user_uuid", columns={"uuid"})
  * })
  *
- * @UniqueEntity(fields={"username"})
+ * @UniqueEntity(fields={"nickname"})
  * @UniqueEntity(fields={"email"})
  */
 class User implements UserInterface, ObfuscatedInterface
@@ -75,6 +75,16 @@ class User implements UserInterface, ObfuscatedInterface
     private $id;
 
     /**
+     * @ORM\Column(type="string", length=255, unique=true)
+     * @Groups({"user:read", "user:write", "book:item:get"})
+     *
+     * @Assert\NotBlank
+     *
+     * @ApiProperty(iri="https://schema.org/name")
+     */
+    private $nickname;
+
+    /**
      * @var string The hashed password
      * @ORM\Column(type="string")
      * @Groups({"user:write"})
@@ -89,19 +99,8 @@ class User implements UserInterface, ObfuscatedInterface
     /**
      * @ORM\Column(type="json")
      * @Groups({"user:read", "user:write"})
-     *
      */
     private $roles = [];
-
-    /**
-     * @ORM\Column(type="string", length=255, unique=true)
-     * @Groups({"user:read", "user:write", "book:item:get"})
-     *
-     * @Assert\NotBlank
-     *
-     * @ApiProperty(iri="https://schema.org/name")
-     */
-    private $username;
 
     /**
      * User constructor.
@@ -167,6 +166,18 @@ class User implements UserInterface, ObfuscatedInterface
     public function getId(): ?int
     {
         return $this->id;
+    }
+
+    /**
+     * Nickname getter.
+     *
+     * Nickname is used, because Username is used by UserInterface to return email.
+     *
+     * @return string
+     */
+    public function getNickname(): ?string
+    {
+        return $this->nickname;
     }
 
     /**
@@ -265,6 +276,20 @@ class User implements UserInterface, ObfuscatedInterface
     }
 
     /**
+     * Username fluent setter.
+     *
+     * @param string $username the new username
+     *
+     * @return User
+     */
+    public function setNickname(string $nickname): self
+    {
+        $this->nickname = $nickname;
+
+        return $this;
+    }
+
+    /**
      * Password fluent setter.
      *
      * @param string $password the new password
@@ -306,20 +331,6 @@ class User implements UserInterface, ObfuscatedInterface
     public function setRoles(array $roles): self
     {
         $this->roles = $roles;
-
-        return $this;
-    }
-
-    /**
-     * Username fluent setter.
-     *
-     * @param string $username the new username
-     *
-     * @return User
-     */
-    public function setUsername(string $username): self
-    {
-        $this->username = $username;
 
         return $this;
     }

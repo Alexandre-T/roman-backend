@@ -17,6 +17,7 @@ namespace App\DataFixtures;
 
 use App\Entity\Book;
 use App\Entity\User;
+use App\Factory\BookFactory;
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Common\Persistence\ObjectManager;
 
@@ -29,37 +30,57 @@ class AppFixtures extends Fixture
      */
     public function load(ObjectManager $manager): void
     {
-        $admin = new User();
-        $admin->setUsername('Admin');
-        $admin->setEmail('admin@example.org');
-        $admin->setPlainPassword('admin');
-        $admin->setRoles(['ROLE_ADMIN']);
+        $admin = $this->createUser('admin', true);
+        $owner = $this->createUser('owner', false);
+        $user = $this->createUser('user', false);
+
+        $bookOfAdmin = $this->createBook('Book of admin', $admin);
+        $firstBookOfOwner = $this->createBook('First book of owner', $owner);
+        $secondBookOfOwner = $this->createBook('Second book of owner', $owner);
+
         $manager->persist($admin);
-
-        $owner = new User();
-        $owner->setUsername('Owner');
-        $owner->setEmail('owner@example.org');
-        $owner->setPlainPassword('owner');
-        $owner->setRoles(['ROLE_USER']);
         $manager->persist($owner);
-
-        $user = new User();
-        $user->setUsername('User');
-        $user->setEmail('user@example.org');
-        $user->setPlainPassword('user');
-        $user->setRoles(['ROLE_USER']);
         $manager->persist($user);
+        $manager->persist($bookOfAdmin);
+        $manager->persist($firstBookOfOwner);
+        $manager->persist($secondBookOfOwner);
 
-        $book = new Book();
-        $book->setTitle('Book of Owner');
-        $book->setOwner($owner);
-        $manager->persist($book);
         $manager->flush();
+    }
 
-        $book = new Book();
-        $book->setTitle('Book of Admin');
-        $book->setOwner($admin);
-        $manager->persist($book);
-        $manager->flush();
+    /**
+     * Create a book for a user.
+     *
+     * @param string $title Title of the book
+     * @param User   $owner Owner of the book
+     *
+     * @return Book
+     */
+    private function createBook(string $title, User $owner): Book
+    {
+        return BookFactory::createBook($owner, $title);
+    }
+
+    /**
+     * Create a user.
+     *
+     * @param string $nickname the nickname used to generation nickname, password and email
+     * @param bool   $isAdmin  is this user an admin?
+     *
+     * @return User
+     */
+    private function createUser(string $nickname, bool $isAdmin): User
+    {
+        $user = new User();
+        $user->setNickname(ucfirst($nickname));
+        $user->setEmail($nickname.'@example.org');
+        $user->setPlainPassword($nickname);
+        $user->setRoles(['ROLE_USER']);
+
+        if ($isAdmin) {
+            $user->setRoles(['ROLE_ADMIN']);
+        }
+
+        return $user;
     }
 }

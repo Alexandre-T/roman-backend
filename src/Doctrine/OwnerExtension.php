@@ -89,8 +89,7 @@ final class OwnerExtension implements QueryCollectionExtensionInterface, QueryIt
     private function addWhere(QueryBuilder $queryBuilder, string $resourceClass): void
     {
         $user = $this->security->getUser();
-
-        if (null === $user || $this->security->isGranted('ROLE_ADMIN')) {
+        if ($this->security->isGranted('ROLE_ADMIN')) {
             return;
         }
 
