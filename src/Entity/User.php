@@ -278,7 +278,7 @@ class User implements UserInterface, ObfuscatedInterface
     /**
      * Username fluent setter.
      *
-     * @param string $username the new username
+     * @param string $nickname the new username
      *
      * @return User
      */
