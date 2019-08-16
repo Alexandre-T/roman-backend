@@ -29,6 +29,15 @@ use Symfony\Component\Validator\Constraints as Assert;
  * User entity.
  *
  * @ApiResource(
+ *     collectionOperations={
+ *         "get": {"access_control": "is_granted('ROLE_ADMIN')"},
+ *         "post": {"access_control": "is_granted('create', object)"}
+ *     },
+ *     itemOperations={
+ *         "get": {"access_control": "is_granted('show', object)"},
+ *         "put": {"access_control": "is_granted('edit', object)"},
+ *         "delete": {"access_control": "is_granted('delete', object)"},
+ *     },
  *     denormalizationContext={"groups": {"user:write"}},
  *     normalizationContext={"groups": {"user:read"}},
  *     iri="https://schema.org/Person"
@@ -61,6 +70,7 @@ class User implements UserInterface, ObfuscatedInterface
      *
      * @Assert\NotBlank
      * @Assert\Email
+     * @Assert\Length(max="180")
      *
      * @ApiProperty(iri="https://schema.org/email")
      */
@@ -79,6 +89,7 @@ class User implements UserInterface, ObfuscatedInterface
      * @Groups({"user:read", "user:write", "book:item:get"})
      *
      * @Assert\NotBlank
+     * @Assert\Length(min="5", max="255")
      *
      * @ApiProperty(iri="https://schema.org/name")
      */
@@ -87,20 +98,23 @@ class User implements UserInterface, ObfuscatedInterface
     /**
      * @var string The hashed password
      * @ORM\Column(type="string")
-     * @Groups({"user:write"})
      */
     private $password;
 
     /**
      * @var string the plain password
+     * @Assert\NotBlank()
+     * @Assert\Length(min="8", max="4096")
+     * @Groups({"user:write"})
+     * @ApiProperty()
      */
     private $plainPassword;
 
     /**
      * @ORM\Column(type="json")
-     * @Groups({"user:read", "user:write"})
+     * @Groups({"user:read"})
      */
-    private $roles = [];
+    private $roles = ['ROLE_USER'];
 
     /**
      * User constructor.
