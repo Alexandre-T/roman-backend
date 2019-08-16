@@ -15,4 +15,6 @@ declare(strict_types=1);
 
 putenv('APP_ENV='.$_SERVER['APP_ENV'] = $_ENV['APP_ENV'] = 'test');
 require dirname(__DIR__, 1).'/config/bootstrap.php';
+
+#FIXME if someone knows how to autoload FeatureContext...
 require __DIR__ . '/Context/FeatureContext.php';

@@ -1,4 +1,4 @@
-# features/users.feature
+# features/users-crud.feature
 Feature: Users CRUD feature
   # ---------------------------------------------------------------------------------------------------
   # COLLECTION GET

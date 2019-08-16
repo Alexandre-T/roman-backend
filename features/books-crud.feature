@@ -1,4 +1,4 @@
-# features/books.feature
+# features/books-crud.feature
 Feature: Books CRUD feature
   # ---------------------------------------------------------------------------------------------------
   # COLLECTION GET
