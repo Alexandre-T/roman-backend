@@ -73,6 +73,13 @@
     -->
     <rule ref="Generic.CodeAnalysis.UnusedFunctionParameter"/>
 
+    <rule ref="Generic.CodeAnalysis.UnusedFunctionParameter.FoundInImplementedInterfaceAfterLastUsed">
+        <severity>0</severity>
+    </rule>
+
+    <rule ref="Generic.CodeAnalysis.UnusedFunctionParameter.FoundInImplementedInterfaceBeforeLastUsed">
+        <severity>0</severity>
+    </rule>
     <!--
       There may not be any 'TODO' comments
     -->

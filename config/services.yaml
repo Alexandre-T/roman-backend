@@ -4,6 +4,10 @@
 # Put parameters here that don't need to change on each machine where the app is deployed
 # https://symfony.com/doc/current/best_practices/configuration.html#application-related-configuration
 parameters:
+    locale: 'fr'
+    expediter: '%env(MAILER_EXPEDITER)%'
+    activationUrl: '%env(ACTIVATION_URL)%'
+    changePasswordUrl: '%env(CHANGE_PASSWORD_URL)%'
 
 services:
     # default configuration for services in *this* file
@@ -41,5 +45,14 @@ services:
             - { name: api_platform.doctrine.orm.query_extension.collection }
             - { name: api_platform.doctrine.orm.query_extension.item }
 
+    #Mailer come with parameters. Autowire is not available.
+    App\Mailer\Mailer:
+        arguments:
+            - '@swiftmailer.mailer'
+            - '@twig'
+            - parameters:
+                  from: '%expediter%'
+                  activationUrl: '%activationUrl%'
+                  changePasswordUrl: '%changePasswordUrl%'
     # add more service definitions when explicit configuration is needed
     # please note that last definitions always *replace* previous ones
