@@ -1,0 +1,15 @@
+explanation:
+  password-lost:
+    declaration: 'Vous venez de déclarer la perte de votre mot de passe. '
+    how-to: 'En cliquant sur le lien ci-dessus, vous allez être redigéré vers un formulaire en ligne où vous pourrez changer votre mot de passe.'
+  activation-code:
+    welcome: 'Bonjour et bienvenue sur Roman, votre compte a correctement été créé. Il ne vous reste plus qu’à l’activer.'
+    how-to: 'Pour activer votre compte, cliquez sur le lien ci-dessus.'
+link:
+  reset:
+    text: 'Accéder au formulaire'
+  activation:
+    text: 'mail'
+title:
+  password-lost: 'Roman : Réinitialisation de votre mot de passe'
+  activation-code: 'Roman : Activation de votre compte'
