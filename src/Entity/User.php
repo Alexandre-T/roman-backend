@@ -17,9 +17,13 @@ namespace App\Entity;
 
 use ApiPlatform\Core\Annotation\ApiProperty;
 use ApiPlatform\Core\Annotation\ApiResource;
+use App\Controller\UserActivation;
+use DateTimeImmutable;
+use DateTimeInterface;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use Exception;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Component\Serializer\Annotation\Groups;
@@ -31,14 +35,23 @@ use Symfony\Component\Validator\Constraints as Assert;
  * @ApiResource(
  *     collectionOperations={
  *         "get": {"access_control": "is_granted('ROLE_ADMIN')"},
- *         "post": {"access_control": "is_granted('create', object)"}
+ *         "post": {"access_control": "is_granted('create', object)", "validation_groups": {"default"}}
  *     },
  *     itemOperations={
  *         "get": {"access_control": "is_granted('show', object)"},
- *         "put": {"access_control": "is_granted('edit', object)"},
+ *         "put": {"access_control": "is_granted('edit', object)", "validation_groups": {"default"}},
  *         "delete": {"access_control": "is_granted('delete', object)"},
+ *         "activate": {
+ *             "access_control": "is_granted('activate', object)",
+ *             "attributes": {"validation_groups": {"activation"}},
+ *             "controller": UserActivation::class,
+ *             "denormalization_context": {"groups": {"user:activate"}},
+ *             "method": "PUT",
+ *             "normalization_context": {"groups": {"user:activated"}},
+ *             "path": "/users/{id}/activate"
+ *         }
  *     },
- *     denormalizationContext={"groups": {"user:write"}},
+ *     denormalizationContext={"groups": {"user:write", "user:renew"}},
  *     normalizationContext={"groups": {"user:read"}},
  *     iri="https://schema.org/Person"
  * )
@@ -53,8 +66,10 @@ use Symfony\Component\Validator\Constraints as Assert;
  * @UniqueEntity(fields={"nickname"})
  * @UniqueEntity(fields={"email"})
  */
-class User implements UserInterface, ObfuscatedInterface
+class User implements ActivationInterface, UserInterface, ObfuscatedInterface
 {
+    //To implement Activation interface.
+    use ActivationTrait;
     //To implement obfuscated interface.
     use ObfuscatedTrait;
 
@@ -68,9 +83,9 @@ class User implements UserInterface, ObfuscatedInterface
      * @ORM\Column(type="string", length=180, unique=true)
      * @Groups({"user:read", "user:write"})
      *
-     * @Assert\NotBlank
-     * @Assert\Email
-     * @Assert\Length(max="180")
+     * @Assert\NotBlank(groups={"default"})
+     * @Assert\Email(groups={"default"})
+     * @Assert\Length(max="180", groups={"default"})
      *
      * @ApiProperty(iri="https://schema.org/email")
      */
@@ -88,8 +103,8 @@ class User implements UserInterface, ObfuscatedInterface
      * @ORM\Column(type="string", length=255, unique=true)
      * @Groups({"user:read", "user:write", "book:item:get"})
      *
-     * @Assert\NotBlank
-     * @Assert\Length(min="5", max="255")
+     * @Assert\NotBlank(groups={"default"})
+     * @Assert\Length(min="5", max="255", groups={"default"})
      *
      * @ApiProperty(iri="https://schema.org/name")
      */
@@ -103,12 +118,22 @@ class User implements UserInterface, ObfuscatedInterface
 
     /**
      * @var string the plain password
-     * @Assert\NotBlank()
-     * @Assert\Length(min="8", max="4096")
+     * @Assert\NotBlank(groups={"default"})
+     * @Assert\Length(groups={"default"}, min="8", max="4096")
      * @Groups({"user:write"})
-     * @ApiProperty()
+     * @ApiProperty
      */
     private $plainPassword;
+
+    /**
+     * @ORM\Column(type="datetime", nullable=true)
+     */
+    private $renewAt;
+
+    /**
+     * @ORM\Column(type="string", length=36, nullable=true)
+     */
+    private $renewCode;
 
     /**
      * @ORM\Column(type="json")
@@ -122,6 +147,7 @@ class User implements UserInterface, ObfuscatedInterface
     public function __construct()
     {
         $this->initUuid();
+        $this->initActivation();
         $this->books = new ArrayCollection();
     }
 
@@ -217,6 +243,24 @@ class User implements UserInterface, ObfuscatedInterface
     }
 
     /**
+     * @return DateTimeInterface|null
+     */
+    public function getRenewAt(): ?DateTimeInterface
+    {
+        return $this->renewAt;
+    }
+
+    /**
+     * Renew code for password update getter.
+     *
+     * @return string|null
+     */
+    public function getRenewCode(): ?string
+    {
+        return $this->renewCode;
+    }
+
+    /**
      * Roles getter.
      *
      * @see UserInterface
@@ -252,6 +296,16 @@ class User implements UserInterface, ObfuscatedInterface
     public function getUsername(): string
     {
         return (string) $this->email;
+    }
+
+    /**
+     * Is user activated?
+     *
+     * @return bool
+     */
+    public function isActivated(): bool
+    {
+        return $this->activated;
     }
 
     /**
@@ -331,6 +385,28 @@ class User implements UserInterface, ObfuscatedInterface
         // Doctrine *not* saving this entity, if only plainPassword changes
         // @see https://knpuniversity.com/screencast/symfony-security/user-plain-password
         $this->password = null;
+
+        return $this;
+    }
+
+    /**
+     * Renew code fluent setter.
+     *
+     * @param string|null $renewCode A new code to provide to change password
+     *
+     * @throws Exception when DateTimeImmutable cannot be created
+     *
+     * @return User
+     */
+    public function setRenewCode(?string $renewCode = null): self
+    {
+        $this->renewCode = $renewCode;
+
+        if (null === $renewCode) {
+            $this->renewAt = null;
+        } else {
+            $this->renewAt = new DateTimeImmutable();
+        }
 
         return $this;
     }

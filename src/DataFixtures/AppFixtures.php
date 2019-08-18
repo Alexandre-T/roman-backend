@@ -15,6 +15,7 @@ declare(strict_types=1);
 
 namespace App\DataFixtures;
 
+use App\Entity\ActivationInterface;
 use App\Entity\Book;
 use App\Entity\ObfuscatedInterface;
 use App\Entity\User;
@@ -40,6 +41,7 @@ class AppFixtures extends Fixture
             $admin = $this->createUser('admin', true, 1);
             $owner = $this->createUser('owner', false, 2);
             $user = $this->createUser('user', false, 3);
+            $inactive = $this->createUser('inactive', false, 4, false);
 
             $bookOfAdmin = $this->createBook('Book of admin', $admin, 1);
             $firstBookOfOwner = $this->createBook('First book of owner', $owner, 2);
@@ -48,6 +50,7 @@ class AppFixtures extends Fixture
             $manager->persist($admin);
             $manager->persist($owner);
             $manager->persist($user);
+            $manager->persist($inactive);
             $manager->persist($bookOfAdmin);
             $manager->persist($firstBookOfOwner);
             $manager->persist($secondBookOfOwner);
@@ -81,25 +84,54 @@ class AppFixtures extends Fixture
      * @param string $nickname   the nickname used to generation nickname, password and email
      * @param bool   $isAdmin    is this user an admin?
      * @param int    $identifier the identifier
+     * @param bool   $isActive   is this user active?
      *
      * @return User
      */
-    private function createUser(string $nickname, bool $isAdmin, int $identifier): User
+    private function createUser(string $nickname, bool $isAdmin, int $identifier, bool $isActive = true): User
     {
         $user = new User();
         $user->setNickname(ucfirst($nickname));
         $user->setEmail($nickname.'@example.org');
         $user->setPlainPassword($nickname);
         $user->setRoles(['ROLE_USER']);
+        $user->activate();
 
         if ($isAdmin) {
             $user->setRoles(['ROLE_ADMIN']);
         }
 
+        if (!$isActive) {
+            $user->inactivate();
+        }
+
         //Change the UUID for tests
         $this->updateUuid($user, $identifier);
+        $this->updateActivationCode($user);
 
         return $user;
+    }
+
+    /**
+     * Reflect a Activation class to access its private activation code property.
+     *
+     * @param ActivationInterface $entity the class to update
+     *
+     * @return ActivationInterface
+     */
+    private function updateActivationCode(ActivationInterface $entity): ActivationInterface
+    {
+        try {
+            $reflection = new ReflectionClass($entity);
+            $property = $reflection->getProperty('activationCode');
+            $property->setAccessible(true);
+            $property->setValue($entity, 'good-activation-code');
+        } catch (ReflectionException $e) {
+            //This cannot be reached because User use ActivationTrait.
+            return $entity;
+        }
+
+        return $entity;
     }
 
     /**

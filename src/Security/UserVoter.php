@@ -22,7 +22,8 @@ use Symfony\Component\Security\Core\Security;
 
 class UserVoter extends Voter
 {
-    public const ACTIONS = [self::CREATE, self::DELETE, self::EDIT, self::LIST, self::SHOW];
+    public const ACTIONS = [self::ACTIVATE, self::CREATE, self::DELETE, self::EDIT, self::LIST, self::SHOW];
+    public const ACTIVATE = 'activate';
     public const CREATE = 'create';
     public const DELETE = 'delete';
     public const EDIT = 'edit';
@@ -85,26 +86,26 @@ class UserVoter extends Voter
 
         $user = $token->getUser();
 
-        //Anonymous user can register
-        if (!$user instanceof User && self::CREATE === $attribute) {
-            return true;
-        }
-
         if (!$user instanceof User) {
+            switch ($attribute) {
+                //Anonymous user can register
+                //Anonymous user can activate their account
+                case self::CREATE:
+                case self::ACTIVATE:
+                    return true;
+            }
+
             return false;
         }
 
-        //User can edit, delete, show himself
+        //Authenticated user can only edit, delete, show himself
         switch ($attribute) {
-            case self::CREATE:
-            case self::LIST:
-                return false;
             case self::EDIT:
             case self::DELETE:
             case self::SHOW:
                 return $subject === $user;
+            default:
+                return false;
         }
-
-        return false;
     }
 }

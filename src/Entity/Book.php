@@ -86,7 +86,7 @@ class Book implements ObfuscatedInterface
      * @ORM\ManyToOne(targetEntity="App\Entity\User", inversedBy="books")
      * @ORM\JoinColumn(nullable=false)
      *
-     * @Assert\NotNull()
+     * @Assert\NotNull
      */
     private $owner;
 
@@ -102,7 +102,7 @@ class Book implements ObfuscatedInterface
      *
      * @ApiProperty(iri="http://schema.org/name")
      *
-     * @Assert\NotBlank()
+     * @Assert\NotBlank
      * @Assert\Length(max="255")
      */
     private $title;

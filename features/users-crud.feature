@@ -28,7 +28,7 @@ Feature: Users CRUD feature
       | @context          | /api/contexts/User                  |
       | @id               | /api/users                          |
       | @type             | hydra:Collection                    |
-      | hydra:totalItems  | 3                                   |
+      | hydra:totalItems  | 4                                   |
 
   @restContext
   Scenario: Listing all users with owner authentication should be refused.

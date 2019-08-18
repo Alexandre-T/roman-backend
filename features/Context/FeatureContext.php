@@ -22,8 +22,8 @@ use Behat\Behat\Context\Context;
 use Behat\Behat\Hook\Scope\BeforeScenarioScope;
 use Behatch\Context\RestContext;
 use Doctrine\Common\DataFixtures\Executor\ORMExecutor;
-use Doctrine\Common\DataFixtures\Purger\ORMPurger;
 use Doctrine\Common\DataFixtures\Loader;
+use Doctrine\Common\DataFixtures\Purger\ORMPurger;
 use Doctrine\ORM\EntityManagerInterface as EntityManagerInterface;
 use Doctrine\ORM\Tools\SchemaTool;
 use Doctrine\ORM\Tools\ToolsException;
@@ -77,6 +77,22 @@ class FeatureContext implements Context
         } catch (ToolsException $e) {
             throw new RuntimeException('Unable to create schema.', 500, $e);
         }
+    }
+
+    /**
+     * @Given /^database is clean$/
+     */
+    public function databaseIsClean(): void
+    {
+        $appFixtures = new AppFixtures();
+        $loader = new Loader();
+        $loader->addFixture($appFixtures);
+
+        $purger = new ORMPurger();
+        $purger->setPurgeMode(ORMPurger::PURGE_MODE_DELETE);
+
+        $executor = new ORMExecutor($this->manager, $purger);
+        $executor->execute($loader->getFixtures());
     }
 
     /**
@@ -137,21 +153,5 @@ class FeatureContext implements Context
         $user = $userRepository->findOneByEmail($username.'@example.org');
         $token = $this->jwtManager->create($user);
         $this->restContext->iAddHeaderEqualTo('Authorization', "Bearer {$token}");
-    }
-
-    /**
-     * @Given /^database is clean$/
-     */
-    public function databaseIsClean()
-    {
-        $appFixtures = new AppFixtures();
-        $loader = new Loader();
-        $loader->addFixture($appFixtures);
-
-        $purger = new ORMPurger();
-        $purger->setPurgeMode(ORMPurger::PURGE_MODE_DELETE);
-
-        $executor = new ORMExecutor($this->manager, $purger);
-        $executor->execute($loader->getFixtures());
     }
 }

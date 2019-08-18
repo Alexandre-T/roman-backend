@@ -21,7 +21,7 @@ use Doctrine\Migrations\AbstractMigration;
 /**
  * Auto-generated Migration: Please modify to your needs!
  */
-final class Version20190814141249 extends AbstractMigration
+final class Version20190816195311 extends AbstractMigration
 {
     public function down(Schema $schema): void
     {
@@ -44,7 +44,7 @@ final class Version20190814141249 extends AbstractMigration
         $this->abortIf('mysql' !== $this->connection->getDatabasePlatform()->getName(), 'Migration can only be executed safely on \'mysql\'.');
 
         $this->addSql('CREATE TABLE te_book (id INT AUTO_INCREMENT NOT NULL, owner_id INT NOT NULL, author VARCHAR(255) DEFAULT NULL, biography LONGTEXT DEFAULT NULL, drama_pitch LONGTEXT DEFAULT NULL, tagline_pitch LONGTEXT DEFAULT NULL, title VARCHAR(255) NOT NULL, trajectorial_pitch LONGTEXT DEFAULT NULL, uuid VARCHAR(36) NOT NULL, INDEX idx_book_owner (owner_id), UNIQUE INDEX uk_book_uuid (uuid), PRIMARY KEY(id)) DEFAULT CHARACTER SET utf8 COLLATE utf8_unicode_ci ENGINE = InnoDB');
-        $this->addSql('CREATE TABLE ts_user (id INT AUTO_INCREMENT NOT NULL, email VARCHAR(180) NOT NULL, password VARCHAR(255) NOT NULL, roles JSON NOT NULL, nickname VARCHAR(255) NOT NULL, uuid VARCHAR(36) NOT NULL, UNIQUE INDEX uk_user_mail (email), UNIQUE INDEX uk_user_nickname (nickname), UNIQUE INDEX uk_user_uuid (uuid), PRIMARY KEY(id)) DEFAULT CHARACTER SET utf8 COLLATE utf8_unicode_ci ENGINE = InnoDB');
+        $this->addSql('CREATE TABLE ts_user (id INT AUTO_INCREMENT NOT NULL, activated TINYINT(1) NOT NULL, activation_code VARCHAR(36) NOT NULL, email VARCHAR(180) NOT NULL, nickname VARCHAR(255) NOT NULL, password VARCHAR(255) NOT NULL, renew_at DATETIME DEFAULT NULL, renew_code VARCHAR(36) DEFAULT NULL, roles JSON NOT NULL, uuid VARCHAR(36) NOT NULL, UNIQUE INDEX uk_user_mail (email), UNIQUE INDEX uk_user_nickname (nickname), UNIQUE INDEX uk_user_uuid (uuid), PRIMARY KEY(id)) DEFAULT CHARACTER SET utf8 COLLATE utf8_unicode_ci ENGINE = InnoDB');
         $this->addSql('ALTER TABLE te_book ADD CONSTRAINT FK_8D9091987E3C61F9 FOREIGN KEY (owner_id) REFERENCES ts_user (id)');
     }
 }

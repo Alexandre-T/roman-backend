@@ -31,7 +31,7 @@ trait ObfuscatedTrait
      * @var string
      * @ORM\Column(type="string", length=36, nullable=false, unique=true)
      * @Groups({"book:read", "user:read"})
-     * @ApiProperty(identifier=true)
+     * @ApiProperty(identifier=true, iri="https://schema.org/identifier")
      */
     private $uuid;
 
