@@ -1,11 +1,30 @@
 api_platform:
+    # The title of the API.
+    title: 'Api for application Roman'
+    # The description of the API.
+    description: 'This application helps user  to write their romans.'
+    # The version of the API.
+    version: '0.0.0'
+
+    # The list of exceptions mapped to their HTTP status code.
     exception_to_status:
+        Symfony\Component\Serializer\Exception\ExceptionInterface: 'HTTP_BAD_REQUEST'
+        ApiPlatform\Core\Exception\InvalidArgumentException: 'HTTP_BAD_REQUEST'
         App\Exception\UserAlreadyActiveException: 'HTTP_BAD_REQUEST'
         App\Exception\BadActivationCodeException: 'HTTP_BAD_REQUEST'
+
     mapping:
+        # The list of paths with files or directories where the bundle will look for additional resource files.
         paths: ['%kernel.project_dir%/src/Entity']
+
     swagger:
+        # The swagger api keys.
         api_keys:
             apiKey:
                 name: Authorization
                 type: header
+
+    ##########################################################################
+    # ALL OTHER ARE SET TO DEFAULT VALUE
+    # @see https://github.com/api-platform/docs/blob/2.4/core/configuration.md
+    ##########################################################################
