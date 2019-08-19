@@ -15,25 +15,26 @@ declare(strict_types=1);
 
 namespace App\Mailer;
 
-use App\Entity\User;
+use App\Entity\ActivationInterface;
+use App\Entity\ResetPasswordInterface;
 
 interface MailerInterface
 {
     /**
      * Send an email to reset password.
      *
-     * @param User $user Mail recipient
+     * @param ResetPasswordInterface $user Mail recipient
      *
      * @return int
      */
-    public function sendResettingEmailMessage(User $user): int;
+    public function sendResettingEmailMessage(ResetPasswordInterface $user): int;
 
     /**
      * Send an email to user to share activation code.
      *
-     * @param User $user the new user
+     * @param ActivationInterface $user the new user
      *
      * @return int
      */
-    public function sendUserActivationMail(User $user): int;
+    public function sendUserActivationMail(ActivationInterface $user): int;
 }

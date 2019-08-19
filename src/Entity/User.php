@@ -18,12 +18,9 @@ namespace App\Entity;
 use ApiPlatform\Core\Annotation\ApiProperty;
 use ApiPlatform\Core\Annotation\ApiResource;
 use App\Controller\UserActivation;
-use DateTimeImmutable;
-use DateTimeInterface;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
-use Exception;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Component\Serializer\Annotation\Groups;
@@ -66,12 +63,14 @@ use Symfony\Component\Validator\Constraints as Assert;
  * @UniqueEntity(fields={"nickname"})
  * @UniqueEntity(fields={"email"})
  */
-class User implements ActivationInterface, UserInterface, ObfuscatedInterface
+class User implements ActivationInterface, UserInterface, ObfuscatedInterface, ResetPasswordInterface
 {
     //To implement Activation interface.
     use ActivationTrait;
     //To implement obfuscated interface.
     use ObfuscatedTrait;
+    //To implement reset password interface.
+    use ResetPasswordTrait;
 
     /**
      * @Groups({"user:read"})
@@ -115,25 +114,6 @@ class User implements ActivationInterface, UserInterface, ObfuscatedInterface
      * @ORM\Column(type="string")
      */
     private $password;
-
-    /**
-     * @var string the plain password
-     * @Assert\NotBlank(groups={"default"})
-     * @Assert\Length(groups={"default"}, min="8", max="4096")
-     * @Groups({"user:write"})
-     * @ApiProperty
-     */
-    private $plainPassword;
-
-    /**
-     * @ORM\Column(type="datetime", nullable=true)
-     */
-    private $renewAt;
-
-    /**
-     * @ORM\Column(type="string", length=36, nullable=true)
-     */
-    private $renewCode;
 
     /**
      * @ORM\Column(type="json")
@@ -243,24 +223,6 @@ class User implements ActivationInterface, UserInterface, ObfuscatedInterface
     }
 
     /**
-     * @return DateTimeInterface|null
-     */
-    public function getRenewAt(): ?DateTimeInterface
-    {
-        return $this->renewAt;
-    }
-
-    /**
-     * Renew code for password update getter.
-     *
-     * @return string|null
-     */
-    public function getRenewCode(): ?string
-    {
-        return $this->renewCode;
-    }
-
-    /**
      * Roles getter.
      *
      * @see UserInterface
@@ -367,46 +329,6 @@ class User implements ActivationInterface, UserInterface, ObfuscatedInterface
     public function setPassword(string $password): self
     {
         $this->password = $password;
-
-        return $this;
-    }
-
-    /**
-     * Set the non-persistent plain password.
-     *
-     * @param string $plainPassword non-encrypted password
-     *
-     * @return User
-     */
-    public function setPlainPassword(string $plainPassword): User
-    {
-        $this->plainPassword = $plainPassword;
-        // forces the object to look "dirty" to Doctrine. Avoids
-        // Doctrine *not* saving this entity, if only plainPassword changes
-        // @see https://knpuniversity.com/screencast/symfony-security/user-plain-password
-        $this->password = null;
-
-        return $this;
-    }
-
-    /**
-     * Renew code fluent setter.
-     *
-     * @param string|null $renewCode A new code to provide to change password
-     *
-     * @throws Exception when DateTimeImmutable cannot be created
-     *
-     * @return User
-     */
-    public function setRenewCode(?string $renewCode = null): self
-    {
-        $this->renewCode = $renewCode;
-
-        if (null === $renewCode) {
-            $this->renewAt = null;
-        } else {
-            $this->renewAt = new DateTimeImmutable();
-        }
 
         return $this;
     }

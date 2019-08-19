@@ -8,14 +8,20 @@ api_platform:
 
     # The list of exceptions mapped to their HTTP status code.
     exception_to_status:
-        Symfony\Component\Serializer\Exception\ExceptionInterface: 'HTTP_BAD_REQUEST'
-        ApiPlatform\Core\Exception\InvalidArgumentException: 'HTTP_BAD_REQUEST'
-        App\Exception\UserAlreadyActiveException: 'HTTP_BAD_REQUEST'
-        App\Exception\BadActivationCodeException: 'HTTP_BAD_REQUEST'
+        App\Exception\UserAlreadyActiveException: 400
+        App\Exception\BadActivationCodeException: 400
+        App\Exception\UserNotFoundException: 404
+        # The 4 following handlers are registered by default, keep those lines to prevent unexpected side effects
+        Symfony\Component\Serializer\Exception\ExceptionInterface: 400 # Use a raw status code (recommended)
+        ApiPlatform\Core\Exception\InvalidArgumentException: 400 # Or a `Symfony\Component\HttpFoundation\Response`'s constant
+        ApiPlatform\Core\Exception\FilterValidationException: 400
+        Doctrine\ORM\OptimisticLockException: 409
 
     mapping:
         # The list of paths with files or directories where the bundle will look for additional resource files.
-        paths: ['%kernel.project_dir%/src/Entity']
+        paths:
+            - '%kernel.project_dir%/src/Entity'
+            - '%kernel.project_dir%/src/Request'
 
     swagger:
         # The swagger api keys.

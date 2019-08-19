@@ -15,7 +15,8 @@ declare(strict_types=1);
 
 namespace App\Mailer;
 
-use App\Entity\User;
+use App\Entity\ActivationInterface;
+use App\Entity\ResetPasswordInterface;
 use Swift_Mailer;
 use Twig;
 
@@ -62,15 +63,15 @@ class Mailer implements MailerInterface
     /**
      * Send a mail to reset password.
      *
-     * @param User $user recipient mail
-     *
-     * @return int
+     * @param ResetPasswordInterface $user recipient mail
      *
      * @throws Twig\Error\LoaderError  on loader error
      * @throws Twig\Error\RuntimeError on runtime error
      * @throws Twig\Error\SyntaxError  on syntax error
+     *
+     * @return int
      */
-    public function sendResettingEmailMessage(User $user): int
+    public function sendResettingEmailMessage(ResetPasswordInterface $user): int
     {
         $url = $this->parameters['changePasswordUrl'];
         $templateHtml = $this->templating->load('mail/resetting.html.twig');
@@ -91,7 +92,7 @@ class Mailer implements MailerInterface
     /**
      * Send an email to user to share activation code.
      *
-     * @param User $user the new user
+     * @param ActivationInterface $user the new user
      *
      * @throws Twig\Error\LoaderError  on loader error
      * @throws Twig\Error\RuntimeError on runtime error
@@ -99,7 +100,7 @@ class Mailer implements MailerInterface
      *
      * @return int
      */
-    public function sendUserActivationMail(User $user): int
+    public function sendUserActivationMail(ActivationInterface $user): int
     {
         $url = $this->parameters['activationUrl'];
         $templateHtml = $this->templating->load('mail/activating.html.twig');

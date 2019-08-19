@@ -18,7 +18,7 @@ namespace App\Entity;
 /**
  * Activation interface.
  */
-interface ActivationInterface
+interface ActivationInterface extends EmailInterface
 {
     /**
      * Activate the entity.
