@@ -18,6 +18,7 @@ namespace App\Handler;
 use App\Entity\ActivationInterface;
 use App\Entity\User;
 use App\Exception\BadActivationCodeException;
+use App\Exception\UserAlreadyActiveException;
 use App\Repository\UserRepository;
 use App\Request\UserActivationRequest;
 use Doctrine\ORM\EntityManagerInterface;
@@ -55,6 +56,7 @@ final class UserActivationRequestHandler implements MessageHandlerInterface
      * @param UserActivationRequest $request the reset password request entity
      *
      * @throws BadActivationCodeException when activation code correspond to no user
+     * @throws UserAlreadyActiveException when user is already active
      */
     public function __invoke(UserActivationRequest $request): void
     {
@@ -63,6 +65,10 @@ final class UserActivationRequestHandler implements MessageHandlerInterface
 
         if (!$user instanceof ActivationInterface) {
             throw new BadActivationCodeException('Activation code is invalid');
+        }
+
+        if ($user->isActive()) {
+            throw new UserAlreadyActiveException('User already active');
         }
 
         if (!$user->verify($request->getActivation())) {

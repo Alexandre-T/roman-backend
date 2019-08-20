@@ -27,10 +27,10 @@ Feature: Users activation feature
     And the response should be in JSON
     And the header "Content-Type" should be equal to "application/ld+json; charset=utf-8"
     And the JSON nodes should contain:
-      | @context                 | /api/contexts/Error |
-      | @type                    | hydra:Error         |
-      | hydra:title              | An error occurred   |
-      | hydra:description        | Bad activation code |
+      | @context                 | /api/contexts/Error        |
+      | @type                    | hydra:Error                |
+      | hydra:title              | An error occurred          |
+      | hydra:description        | Activation code is invalid |
 
   @restContext
   Scenario: Sending a good activation code with authentication shall return an access denied error.
@@ -62,7 +62,7 @@ Feature: Users activation feature
     And I send a "POST" request to "/api/user_activation_requests" with body:
     """
     {
-      "activation": "inactive-activation-code"
+      "activation": "user-activation-code"
     }
     """
     Then the response status code should be 400
@@ -87,10 +87,10 @@ Feature: Users activation feature
     And the response should be in JSON
     And the header "Content-Type" should be equal to "application/ld+json; charset=utf-8"
     And the JSON nodes should contain:
-      | @context                 | /api/contexts/Error                 |
-      | @type                    | hydra:Error                         |
-      | hydra:title              | An error occurred                   |
-      | hydra:description        | Activation code should not be blank |
+      | @context                 | /api/contexts/ConstraintViolationList       |
+      | @type                    | ConstraintViolationList                     |
+      | hydra:title              | An error occurred                           |
+      | hydra:description        | activation: This value should not be blank. |
 
   @restContext
   Scenario: Sending a request with empty activation shall return an explicit error.
@@ -105,7 +105,7 @@ Feature: Users activation feature
     And the response should be in JSON
     And the header "Content-Type" should be equal to "application/ld+json; charset=utf-8"
     And the JSON nodes should contain:
-      | @context                 | /api/contexts/Error                 |
-      | @type                    | hydra:Error                         |
-      | hydra:title              | An error occurred                   |
-      | hydra:description        | Activation code should not be blank |
+      | @context                 | /api/contexts/ConstraintViolationList       |
+      | @type                    | ConstraintViolationList                     |
+      | hydra:title              | An error occurred                           |
+      | hydra:description        | activation: This value should not be blank. |

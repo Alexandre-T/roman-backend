@@ -26,8 +26,8 @@ trait ResetPasswordTrait
 {
     /**
      * @var string the plain password
-     * @Assert\NotBlank(groups={"default"})
-     * @Assert\Length(groups={"default"}, min="8", max="4096")
+     * @Assert\NotBlank
+     * @Assert\Length(min="8", max="4096")
      * @Groups({"user:write"})
      * @ApiProperty
      */
