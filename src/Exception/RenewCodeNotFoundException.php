@@ -13,17 +13,11 @@
 
 declare(strict_types=1);
 
-namespace App\Entity;
+namespace App\Exception;
 
-/**
- * Email Interface.
- */
-interface EmailInterface
+use Exception;
+use Zend\Code\Exception\ExceptionInterface;
+
+class RenewCodeNotFoundException extends Exception implements ExceptionInterface
 {
-    /**
-     * Email getter.
-     *
-     * @return EmailInterface
-     */
-    public function getEmail(): ?string;
 }

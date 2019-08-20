@@ -63,6 +63,28 @@ class UserRepository extends ServiceEntityRepository implements UserLoaderInterf
     }
 
     /**
+     * Find one user by renew password code.
+     *
+     * @param string $code the code to renew password
+     *
+     * @return User|null
+     */
+    public function findOneByRenewPasswordCode(string $code): ?User
+    {
+        try {
+            return $this->createQueryBuilder('u')
+                ->andWhere('u.renewCode = :code')
+                ->setParameter('code', $code)
+                ->getQuery()
+                ->getOneOrNullResult()
+                ;
+        } catch (NonUniqueResultException $e) {
+            //should not be reached because renew password code is an uuid
+            return null;
+        }
+    }
+
+    /**
      * Find one user by username.
      *
      * @param string $username the username of user

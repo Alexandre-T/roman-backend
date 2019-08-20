@@ -11,6 +11,8 @@ api_platform:
         App\Exception\UserAlreadyActiveException: 400
         App\Exception\BadActivationCodeException: 400
         App\Exception\UserNotFoundException: 404
+        App\Exception\RenewCodeNotFoundException: 404
+        App\Exception\RenewCodeExpiredException: 400
         # The 4 following handlers are registered by default, keep those lines to prevent unexpected side effects
         Symfony\Component\Serializer\Exception\ExceptionInterface: 400 # Use a raw status code (recommended)
         ApiPlatform\Core\Exception\InvalidArgumentException: 400 # Or a `Symfony\Component\HttpFoundation\Response`'s constant

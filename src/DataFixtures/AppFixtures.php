@@ -20,8 +20,10 @@ use App\Entity\Book;
 use App\Entity\ObfuscatedInterface;
 use App\Entity\User;
 use App\Factory\BookFactory;
+use DateTimeImmutable;
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Common\Persistence\ObjectManager;
+use Exception;
 use ReflectionClass;
 use ReflectionException;
 
@@ -34,6 +36,8 @@ class AppFixtures extends Fixture
      * Load data.
      *
      * @param ObjectManager $manager the manager to store data in database
+     *
+     * @throws Exception
      */
     public function load(ObjectManager $manager): void
     {
@@ -86,6 +90,8 @@ class AppFixtures extends Fixture
      * @param int    $identifier the identifier
      * @param bool   $isActive   is this user active?
      *
+     * @throws Exception
+     *
      * @return User
      */
     private function createUser(string $nickname, bool $isAdmin, int $identifier, bool $isActive = true): User
@@ -96,6 +102,8 @@ class AppFixtures extends Fixture
         $user->setPlainPassword($nickname);
         $user->setRoles(['ROLE_USER']);
         $user->activate();
+        $user->requestReceived();
+        $user->setRenewCode($nickname.'-renew-code');
 
         if ($isAdmin) {
             $user->setRoles(['ROLE_ADMIN']);
@@ -103,6 +111,7 @@ class AppFixtures extends Fixture
 
         if (!$isActive) {
             $user->inactivate();
+            $user->setRenewAt(new DateTimeImmutable('now - 11 hours'));
         }
 
         //Change the UUID for tests

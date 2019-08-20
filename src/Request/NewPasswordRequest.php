@@ -20,6 +20,10 @@ use ApiPlatform\Core\Annotation\ApiResource;
 use Symfony\Component\Validator\Constraints as Assert;
 
 /**
+ * Renew password request.
+ *
+ * API received from front-end code sent by mail and the new password.
+ *
  * @ApiResource(
  *     messenger=true,
  *     collectionOperations={
@@ -34,41 +38,73 @@ use Symfony\Component\Validator\Constraints as Assert;
  *
  * FIXME Update the swagger documentation.
  */
-final class ResetPasswordRequest
+final class NewPasswordRequest
 {
+    /**
+     * The code sent by mail to user requesting a new mail.
+     *
+     * @var string
+     *
+     * @Assert\NotBlank
+     */
+    private $code;
+
     /**
      * The email to request a new password.
      *
      * @var string
      *
-     * @Assert\Email
      * @Assert\NotBlank
-     * @Assert\Length(max="180")
+     * @Assert\Length(min="5", max="180")
      *
      * @ApiProperty
      */
-    private $email;
+    private $password;
+
+    /**
+     * Code getter.
+     *
+     * @return string
+     */
+    public function getCode(): ?string
+    {
+        return $this->code;
+    }
 
     /**
      * Email getter.
      *
      * @return string
      */
-    public function getEmail(): ?string
+    public function getPassword(): ?string
     {
-        return $this->email;
+        return $this->password;
+    }
+
+    /**
+     * Code fluent setter.
+     *
+     * @param string $code the code sent by mail
+     *
+     * @return NewPasswordRequest
+     */
+    public function setCode(string $code): NewPasswordRequest
+    {
+        $this->code = $code;
+
+        return $this;
     }
 
     /**
      * Email fluent setter.
      *
-     * @param string $email the mail of user
+     * @param string $password the mail of user
      *
-     * @return ResetPasswordRequest
+     * @return NewPasswordRequest
      */
-    public function setEmail(string $email): ResetPasswordRequest
+    public function setPassword(string $password): self
     {
-        $this->email = $email;
+        $this->password = $password;
 
         return $this;
     }
