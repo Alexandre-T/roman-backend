@@ -17,7 +17,6 @@ namespace App\Entity;
 
 use ApiPlatform\Core\Annotation\ApiProperty;
 use ApiPlatform\Core\Annotation\ApiResource;
-use App\Controller\UserActivation;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
@@ -32,23 +31,14 @@ use Symfony\Component\Validator\Constraints as Assert;
  * @ApiResource(
  *     collectionOperations={
  *         "get": {"access_control": "is_granted('ROLE_ADMIN')"},
- *         "post": {"access_control": "is_granted('create', object)", "validation_groups": {"default"}}
+ *         "post": {"access_control": "is_granted('create', object)"}
  *     },
  *     itemOperations={
  *         "get": {"access_control": "is_granted('show', object)"},
- *         "put": {"access_control": "is_granted('edit', object)", "validation_groups": {"default"}},
+ *         "put": {"access_control": "is_granted('edit', object)"},
  *         "delete": {"access_control": "is_granted('delete', object)"},
- *         "activate": {
- *             "access_control": "is_granted('activate', object)",
- *             "attributes": {"validation_groups": {"activation"}},
- *             "controller": UserActivation::class,
- *             "denormalization_context": {"groups": {"user:activate"}},
- *             "method": "PUT",
- *             "normalization_context": {"groups": {"user:activated"}},
- *             "path": "/users/{id}/activate"
- *         }
  *     },
- *     denormalizationContext={"groups": {"user:write", "user:renew"}},
+ *     denormalizationContext={"groups": {"user:write"}},
  *     normalizationContext={"groups": {"user:read"}},
  *     iri="https://schema.org/Person"
  * )
@@ -82,9 +72,9 @@ class User implements ActivationInterface, UserInterface, ObfuscatedInterface, R
      * @ORM\Column(type="string", length=180, unique=true)
      * @Groups({"user:read", "user:write"})
      *
-     * @Assert\NotBlank(groups={"default"})
-     * @Assert\Email(groups={"default"})
-     * @Assert\Length(max="180", groups={"default"})
+     * @Assert\NotBlank
+     * @Assert\Email
+     * @Assert\Length(max="180")
      *
      * @ApiProperty(iri="https://schema.org/email")
      */
@@ -102,8 +92,8 @@ class User implements ActivationInterface, UserInterface, ObfuscatedInterface, R
      * @ORM\Column(type="string", length=255, unique=true)
      * @Groups({"user:read", "user:write", "book:item:get"})
      *
-     * @Assert\NotBlank(groups={"default"})
-     * @Assert\Length(min="5", max="255", groups={"default"})
+     * @Assert\NotBlank
+     * @Assert\Length(min="5", max="255")
      *
      * @ApiProperty(iri="https://schema.org/name")
      */

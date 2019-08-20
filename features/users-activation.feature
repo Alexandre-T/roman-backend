@@ -4,26 +4,20 @@ Feature: Users activation feature
     Given database is clean
     When I add "Content-Type" header equal to "application/json"
     And I add "Accept" header equal to "application/ld+json"
-    And I send a "PUT" request to "/api/users/aaaaaaaa-0000-0004-bbbbbbbbbbbbbbbbb/activate" with body:
+    And I send a "POST" request to "/api/user_activation_requests" with body:
     """
     {
-      "activation": "good-activation-code"
+      "activation": "inactive-activation-code"
     }
     """
-    Then the response status code should be 200
-    And the response should be in JSON
-    And the header "Content-Type" should be equal to "application/ld+json; charset=utf-8"
-    And the JSON node "activated" should be true
-    And the JSON nodes should contain:
-      | @context  | /api/contexts/User                              |
-      | @id       | /api/users/aaaaaaaa-0000-0004-bbbbbbbbbbbbbbbbb |
-      | @type     | https://schema.org/Person                       |
+    Then the response status code should be 202
+    And the response should be empty
 
   Scenario: Sending a bad activation code without authentication shall return an invalid error.
     Given database is clean
     When I add "Content-Type" header equal to "application/json"
     And I add "Accept" header equal to "application/ld+json"
-    And I send a "PUT" request to "/api/users/aaaaaaaa-0000-0004-bbbbbbbbbbbbbbbbb/activate" with body:
+    And I send a "POST" request to "/api/user_activation_requests" with body:
     """
     {
       "activation": "bad-activation-code"
@@ -44,10 +38,10 @@ Feature: Users activation feature
     And I am logged as owner
     When I add "Content-Type" header equal to "application/json"
     And I add "Accept" header equal to "application/ld+json"
-    And I send a "PUT" request to "/api/users/aaaaaaaa-0000-0004-bbbbbbbbbbbbbbbbb/activate" with body:
+    And I send a "POST" request to "/api/user_activation_requests" with body:
     """
     {
-      "activation": "good-activation-code"
+      "activation": "inactive-activation-code"
     }
     """
     Then the response status code should be 403
@@ -65,10 +59,10 @@ Feature: Users activation feature
     Given database is clean
     When I add "Content-Type" header equal to "application/json"
     And I add "Accept" header equal to "application/ld+json"
-    And I send a "PUT" request to "/api/users/aaaaaaaa-0000-0001-bbbbbbbbbbbbbbbbb/activate" with body:
+    And I send a "POST" request to "/api/user_activation_requests" with body:
     """
     {
-      "activation": "good-activation-code"
+      "activation": "inactive-activation-code"
     }
     """
     Then the response status code should be 400
@@ -85,7 +79,7 @@ Feature: Users activation feature
     Given database is clean
     When I add "Content-Type" header equal to "application/json"
     And I add "Accept" header equal to "application/ld+json"
-    And I send a "PUT" request to "/api/users/aaaaaaaa-0000-0004-bbbbbbbbbbbbbbbbb/activate" with body:
+    And I send a "POST" request to "/api/user_activation_requests" with body:
     """
     {}
     """
@@ -103,7 +97,7 @@ Feature: Users activation feature
     Given database is clean
     When I add "Content-Type" header equal to "application/json"
     And I add "Accept" header equal to "application/ld+json"
-    And I send a "PUT" request to "/api/users/aaaaaaaa-0000-0004-bbbbbbbbbbbbbbbbb/activate" with body:
+    And I send a "POST" request to "/api/user_activation_requests" with body:
     """
     {"activation":""}
     """

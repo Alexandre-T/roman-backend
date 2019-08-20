@@ -15,7 +15,6 @@ declare(strict_types=1);
 
 namespace App\DataFixtures;
 
-use App\Entity\ActivationInterface;
 use App\Entity\Book;
 use App\Entity\ObfuscatedInterface;
 use App\Entity\User;
@@ -124,17 +123,17 @@ class AppFixtures extends Fixture
     /**
      * Reflect a Activation class to access its private activation code property.
      *
-     * @param ActivationInterface $entity the class to update
+     * @param User $entity the class to update
      *
-     * @return ActivationInterface
+     * @return User
      */
-    private function updateActivationCode(ActivationInterface $entity): ActivationInterface
+    private function updateActivationCode(User $entity): User
     {
         try {
             $reflection = new ReflectionClass($entity);
             $property = $reflection->getProperty('activationCode');
             $property->setAccessible(true);
-            $property->setValue($entity, 'good-activation-code');
+            $property->setValue($entity, strtolower($entity->getNickname()).'-activation-code');
         } catch (ReflectionException $e) {
             //This cannot be reached because User use ActivationTrait.
             return $entity;

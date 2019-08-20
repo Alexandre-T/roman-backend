@@ -19,7 +19,6 @@ use ApiPlatform\Core\Annotation\ApiProperty;
 use Doctrine\ORM\Mapping as ORM;
 use Ramsey\Uuid\Uuid;
 use Symfony\Component\Serializer\Annotation\Groups;
-use Symfony\Component\Validator\Constraints as Assert;
 
 trait ActivationTrait
 {
@@ -33,17 +32,6 @@ trait ActivationTrait
      * @ApiProperty(readable=true)
      */
     private $activated = false;
-
-    /**
-     * Activation code.
-     *
-     * @ApiProperty(writable=true)
-     * @Groups({"user:activate"})
-     * @Assert\NotBlank(groups={"activate"})
-     *
-     * @var string
-     */
-    private $activation;
 
     /**
      * Activation code.
